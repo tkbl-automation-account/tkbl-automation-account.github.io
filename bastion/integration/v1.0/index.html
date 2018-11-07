@@ -19,16 +19,34 @@
     // , site_id: window.location.host == "www.site.com" ? 'site' : 'site-testing'
     // , server: 'https://www.talkable.com' // OPTIONAL - use your own domain, that suppose to be setup as alias to talkable.com (this option is only possible for Enterprise client)
   }]);
+  
+  var _talkable_order_items = [];
+  _talkable_order_items.push({
+    product_id: 'sku1', /* Item Product ID */
+    price: '199.00', /* Item Unit Price */
+    quantity: '1', /* Item Quantity */
+    title: 'Awesome Product', /* Name of product */
+    url: 'http://www.store.com/product1', /* URL for product */
+    image_url: 'http://www.store.com/product1/image.jpg' /* URL for product image */
+  });
+  _talkable_order_items.push({
+    product_id: 'sku2', /* Item Product ID */
+    price: '6.00', /* Item Unit Price */
+    quantity: '2', /* Item Quantity */
+    title: 'Amazing Product', /* Name of product */
+    url: 'http://www.store.com/product2', /* URL for product */
+    image_url: 'http://www.store.com/product2/image.jpg' /* URL for product image */
+  });
 
 
   var _talkable_order_details = {
-    order_number: faker.random.number(100), // REQUIRED - Order number
+    order_number: faker.random.number(100000), // REQUIRED - Order number
     order_date: '' + orderDate, // REQUIRED - Order Date and Time (ISO 8601 formatted datetime)
     email: faker.internet.email(), // REQUIRED - Customer Email Address
     subtotal: '23.97', // REQUIRED - Purchase Subtotal
     coupon_code: 'SAVE20', // REQUIRED - Coupon code used at checkout, multiple coupons allowed as JS array: ['SAVE20', 'FREE-SHIPPING']. Pass null if there is no coupon code.
     campaign_tags: ['default'], // REQUIRED - Tag(s) of a campaign that should be shown on a screen as a result of successfully registered purchase
-    //items: _talkable_order_items, // OPTIONAL - Pass an array with produc items that were included in a shopping cart at checkout
+    items: _talkable_order_items, // OPTIONAL - Pass an array with produc items that were included in a shopping cart at checkout
     first_name: 'Name', // OPTIONAL - Customer First Name
     last_name: 'Surname', // OPTIONAL - Customer Last Name
     traffic_source: 'Post-checkout' // OPTIONAL - indicate person traffic source. Can be used as segmentation parameter in reporting.
