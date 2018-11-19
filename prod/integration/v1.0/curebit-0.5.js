@@ -3,7 +3,7 @@ var curebit = function() {
     testing: false,
     debug: false,
     gleam_version: '1',   // Used for just cache-busting gleam.js
-    site_id: 'auto-site-campaigns-integration',
+    site_id: 'integration-auto-site-3',
     server: 'https://www.curebit.com',
     version: '0.5',
     queue_check_interval: 200,
