@@ -20,12 +20,13 @@
   <body>
     <pre>
       Site slug: <input id = 'site-slug' class = "show-data" disabled value\></input>
-    Server: <input id = 'server' class = "show-data" disabled value></input>
-    Server: <input id = 'integration-src' class = "show-data" disabled value></input>
+      Server: <input id = 'server' class = "show-data" disabled value></input>
+      Server: <input id = 'integration-src' class = "show-data" disabled value></input>
     </pre>
     <script>
       document.getElementById("site-slug").value = site_data().site_slug;
       document.getElementById("server").value = site_data().server;
+      document.getElementById("integration-src").value = site_data().tkbl_integration_scr;
     </script>
 
     <div class="container">

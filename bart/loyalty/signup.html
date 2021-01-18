@@ -7,6 +7,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
     <script src="site_variables.js"></script>
      <script async id= 'tkbl-integration-script' type="text/javascript"></script>
     <script>
@@ -18,13 +19,14 @@
   </head>
   <body>
     <pre>
-      Site slug: <input id = 'site-slug' width = '500px' disabled value\></input>
-      Server: <input id = 'server' width = '500px' disabled value></input>
-      Server: <input id = 'integration-src' width = '500px' disabled value></input>
+      Site slug: <input id = 'site-slug' class = "show-data" disabled value\></input>
+      Server: <input id = 'server' class = "show-data" disabled value></input>
+      Server: <input id = 'integration-src' class = "show-data" disabled value></input>
     </pre>
     <script>
       document.getElementById("site-slug").value = site_data().site_slug;
       document.getElementById("server").value = site_data().server;
+      document.getElementById("integration-src").value = site_data().tkbl_integration_scr;
     </script>
 
     <div class="container">
