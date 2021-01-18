@@ -12,10 +12,12 @@
     <script>
         var site = site_data().site_slug;
         var server = site_data().server;
+        document.getElementById('tkbl-integration-script').src = site_data().tkbl_integration_scr;
+      
         window._talkableq = window._talkableq || [];
               _talkableq.push(['init', { site_id: site, server: server }]);
     </script>
-    <script async src="integration.js" type="text/javascript"></script>
+    <script async id= 'tkbl-integration-script' type="text/javascript"></script>
     <!--End Talkable script--> 
   </head>
   <body>
