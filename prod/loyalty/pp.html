@@ -22,6 +22,16 @@
     <!--End Talkable script--> 
   </head>
   <body>
+    <pre>
+    Site slug: <input id = 'site-slug' disabled value></input>    
+    Server: <input id = 'server' disabled value></input>
+    Server: <input id = 'integration-src' disabled value></input>
+    </pre>
+    <script>
+      document.getElementById("site-slug").value = site_data().site_slug;
+      document.getElementById("server").value = site_data().server;
+      document.getElementById("integration-src").value = site_data().tkbl_integration_scr;
+    </script>
 
     <div class="container">
       <div class="masthead">
