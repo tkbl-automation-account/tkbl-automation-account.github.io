@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
     <title>pp</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw=="
+          crossorigin="anonymous">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A=="
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="site_variables.js"></script>
-    <!--Start Talkable script-->  
-    <script async id= 'tkbl-integration-script' type="text/javascript"></script>
+    <!--Start Talkable script-->
+    <script async id='tkbl-integration-script' type="text/javascript"></script>
     <script>
         var site = site_data().site_slug;
         var server = site_data().server;
@@ -18,50 +22,56 @@
       
         window._talkableq = window._talkableq || [];
               _talkableq.push(['init', { site_id: site, server: server }]);
+
     </script>
-<!--     <script async id= 'tkbl-integration-script' type="text/javascript"></script> -->
-    <!--End Talkable script--> 
-  </head>
-  <body>
-    <pre>
-    Site slug: <input id = 'site-slug' class = "show-data" disabled value\></input>
-    Server: <input id = 'server' class = "show-data" disabled value></input>
-    Server: <input id = 'integration-src' class = "show-data" disabled value></input>
+    <!--     <script async id= 'tkbl-integration-script' type="text/javascript"></script> -->
+    <!--End Talkable script-->
+</head>
+<body>
+<pre>
+    Site slug: <input id='site-slug' class="show-data" disabled value\></input>
+    Server: <input id='server' class="show-data" disabled value></input>
+    Server: <input id='integration-src' class="show-data" disabled value></input>
     </pre>
-    <script>
+<script>
       document.getElementById("site-slug").value = site_data().site_slug;
       document.getElementById("server").value = site_data().server;
       document.getElementById("integration-src").value = site_data().tkbl_integration_scr;
-    </script>
 
-    <div class="container">
-      <div class="masthead">
+</script>
+
+<div class="container">
+    <div class="masthead">
         <h1 class="text-muted">VOID</h1>
         <nav>
-          <ul class="nav nav-justified">
-            <li><a href="index.html">Index</a></li>
-            <li><a href="signup.html">Signup</a></li>
-            <li  class="active"><a href="pp.html">Post Purchase with data</a></li>
-          </ul>
+            <ul class="nav nav-justified">
+                <li><a href="index.html">Index</a></li>
+                <li><a href="signup.html">Signup</a></li>
+                <li class="active"><a href="pp.html">Post Purchase with data</a></li>
+            </ul>
         </nav>
-      </div>
-      <br>
-      <br>
-      <div>
+    </div>
+    <br>
+    <br>
+    <div>
         Coupon Code: <input type="text" id="couponCode" value="FR_NEW_5_OFF_DEFAULT"><br>
         <script>
           var emailValue = 'QA-'+Math.random().toString(36).substring(7)+'@example.com';
+
         </script>
-        Email: <input type="text" id="emailField" value = "default.email@gmail.com" ><br>
-        Product ID: <input type="text" id="productId" value = "some-product-id"><br>
-        Shipping Address: <input type="text" id="shipping-address" value="2059 Default Street, Mandeville, Louisiana, 70448, United States"><br>
+        Email: <input type="text" id="emailField" value="default.email@gmail.com"><br>
+        Product ID: <input type="text" id="productId" value="some-product-id"><br>
+        Shipping Address: <input type="text" id="shipping-address"
+                                 value="2059 Default Street, Mandeville, Louisiana, 70448, United States"><br>
         ZIP Code: <input type="text" id="zip-code" value="12345"><br>
         Subtotal: <input type="text" id="subtotal" value="100"><br>
-        
+
         <br>
-        <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button><br>
+        <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button>
         <br>
-        <button onclick="showRedeemWidget()">Show redeem widget</button><br>
+        <br>
+        <button onclick="showRedeemWidget()">Show redeem widget</button>
+        <br>
         <script>
             function changeDataAndMakePurahcse(){
               var couponCode = document.getElementById("couponCode").value; 
@@ -128,44 +138,51 @@
                 last_name: '' // Optional, pass when available. Example: 'Smith'
                 }]);
           }
-</script>
-        
-        
-      </div>
-      
-<!-- Talkable container -->
-      
-        <div id="talkable-offer"></div>
-        <div id="talkable-loyalty"></div>
-      
-        
-<!-- Post Purchase integration code     
-   
- End Talkable integration code -->
-<!-- Example row of columns -->
-      <div class="row">
+
+        </script>
+
+
+    </div>
+
+    <!-- Talkable container -->
+
+    <div id="talkable-offer"></div>
+    <div id="talkable-loyalty"></div>
+
+
+    <!-- Post Purchase integration code
+
+     End Talkable integration code -->
+    <!-- Example row of columns -->
+    <div class="row">
         <div class="col-lg-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-lg-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-lg-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
-          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris
+                condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis
+                euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
         </div>
-      </div>
+        <div class="col-lg-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris
+                condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis
+                euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+        </div>
+        <div class="col-lg-4">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
+                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                fermentum massa.</p>
+            <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+        </div>
+    </div>
 
-      <!-- Site footer -->
-      <footer class="footer">
+    <!-- Site footer -->
+    <footer class="footer">
         <p>&copy; 2016 Talkable, Inc.</p>
-      </footer>
+    </footer>
 
-    </div> <!-- /container -->
-  </body>
+</div> <!-- /container -->
+</body>
 </html>
