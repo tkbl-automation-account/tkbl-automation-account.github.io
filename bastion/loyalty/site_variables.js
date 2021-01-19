@@ -1,10 +1,6 @@
 //Site variables:
 var site_data=function(){
-   var data = {
-        site_slug:"loyalty-automation-test-setup",
-        server:"//talkable.com",
-        tkbl_integration_scr:"//d2jjzw81hqbuqv.cloudfront.net/integration/clients/loyalty-automation-test-setup.min.js"
-    };
+   var data = {"site_slug":"automation-site-06896251621","server":"//bastion.talkable.com","tkbl_integration_scr":"//di6re4dxelnn2.cloudfront.net/integration/clients/automation-site-06896251621.min.js"};
    return data;
 }
 
