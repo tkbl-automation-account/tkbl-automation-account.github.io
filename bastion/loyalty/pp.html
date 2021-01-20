@@ -24,20 +24,22 @@
         window._talkableq = window._talkableq || [];
               _talkableq.push(['init', { site_id: site, server: server }]);
 
+
     </script>
     <!--     <script async id= 'tkbl-integration-script' type="text/javascript"></script> -->
     <!--End Talkable script-->
 </head>
 <body>
 <pre>
-    Site slug: <input id='site-slug' class="show-data" disabled value\></input>
-    Server: <input id='server' class="show-data" disabled value></input>
-    Server: <input id='integration-src' class="show-data" disabled value></input>
+    Site slug: <input id='site-slug' class="show-data" disabled value/>
+    Server: <input id='server' class="show-data" disabled value/>
+    Server: <input id='integration-src' class="show-data" disabled value/>
     </pre>
 <script>
       document.getElementById("site-slug").value = site_data().site_slug;
       document.getElementById("server").value = site_data().server;
       document.getElementById("integration-src").value = site_data().tkbl_integration_scr;
+
 
 </script>
 
@@ -59,6 +61,7 @@
         <script>
           var emailValue = 'QA-'+Math.random().toString(36).substring(7)+'@example.com';
 
+
         </script>
         Email: <input type="text" id="emailField" value="default.email@gmail.com"><br>
         Product ID: <input type="text" id="productId" value="some-product-id"><br>
@@ -68,10 +71,10 @@
         Subtotal: <input type="text" id="subtotal" value="100"><br>
 
         <br>
-        <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button>
+        <button id='make-purchase' onclick="changeDataAndMakePurahcse()">Purchase with new data</button>
         <br>
         <br>
-        <button onclick="showRedeemWidget()">Show redeem widget</button>
+        <button id='trigger-redeem-widget' onclick="showRedeemWidget()">Show redeem widget</button>
         <br>
         <script>
             function changeDataAndMakePurahcse(){
@@ -139,6 +142,7 @@
                 last_name: '' // Optional, pass when available. Example: 'Smith'
                 }]);
           }
+
 
         </script>
 
