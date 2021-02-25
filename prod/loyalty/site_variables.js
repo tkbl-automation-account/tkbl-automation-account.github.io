@@ -1,5 +1,5 @@
 //Site variables:
 var site_data=function(){
-   var data = {"site_slug":"automation-site-260556407968","server":"//talkable.com","tkbl_integration_scr":"//d2jjzw81hqbuqv.cloudfront.net/integration/clients/automation-site-260556407968.min.js"};
+   var data = {"site_slug":"automation-site-263152096445","server":"//talkable.com","tkbl_integration_scr":"//d2jjzw81hqbuqv.cloudfront.net/integration/clients/automation-site-263152096445.min.js"};
    return data;
 }
