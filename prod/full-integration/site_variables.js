@@ -1,9 +1,5 @@
 //Site variables:
 var site_data=function(){
-   var data = {
-   "site_slug":"testmax-full-integration-12mar",
-   "server":"//talkable.com",
-   "tkbl_integration_scr":"//di6re4dxelnn2.cloudfront.net/integration/clients/testmax-full-integration-12mar.min.js"};
-
+   var data = {"site_slug":"automation-site-599205467235","server":"//talkable.com","tkbl_integration_scr":"//d2jjzw81hqbuqv.cloudfront.net/integration/clients/automation-site-599205467235.min.js"};
    return data;
 }
