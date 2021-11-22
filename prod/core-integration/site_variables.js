@@ -1,10 +1,5 @@
 //Site variables:
 var site_data=function(){
-   var data = {
-        site_slug:"testmax-loyalty-13oct2021",
-        server:"//void.talkable.com",
-        tkbl_integration_scr:"integration.js"
-    };
+   var data = {"site_slug":"automation-site-588615106567","server":"//talkable.com","tkbl_integration_scr":"https://curebit.s3.amazonaws.com/integration/clients/automation-site-588615106567.min.js"};
    return data;
 }
-
