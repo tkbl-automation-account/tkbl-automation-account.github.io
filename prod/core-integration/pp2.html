@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>pp</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+    <script src="page_builder.js"></script>
+    <script src="site_variables.js"></script>
+    <script src="init.js"></script>
+    <!--Start Talkable script-->
+    <script>
+      tkbl_init();
+    </script>
+    <!--End Talkable script--> 
+  </head>
+  <body onload="build_page()">
+    <pre id="site-values"></pre>
+    <div class="container">
+      <div class="masthead">
+        <h1 class="text-muted">VOID</h1>
+        <nav>
+          <ul id="nav_buttons" class="nav nav-justified" onload="build_nav_buttons()"></ul>
+        </nav>
+      </div>
+      <br>
+      <br>
+      <div>
+        Coupon Code: <input type="text" id="couponCode" value="FR_NEW_5_OFF_DEFAULT"><br>
+        <script>
+          var emailValue = 'QA-'+Math.random().toString(36).substring(7)+'@example.com';
+        </script>
+        Email: <input type="text" id="emailField" value = "default.email@gmail.com" ><br>
+        Product ID: <input type="text" id="productId" value = "some-product-id"><br>
+        Shipping Address: <input type="text" id="shipping-address" value="2059 Default Street, Mandeville, Louisiana, 70448, United States"><br>
+        ZIP Code: <input type="text" id="zip-code" value="12345"><br>
+        Subtotal: <input type="text" id="subtotal" value="100"><br>
+        
+        <br>
+        <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button><br>
+        <br>
+        <button onclick="showRedeemWidget()">Show redeem widget</button><br>
+        <script>
+            function changeDataAndMakePurahcse(){
+              var couponCode = document.getElementById("couponCode").value; 
+              pushTkbl();
+              makePurchase();
+            }
+          
+          function makePurchase(){
+            var _talkable_purchase_items = [];
+    
+            _talkable_purchase_items.push({
+             product_id: document.getElementById("productId").value,//'hoota', // Required — Item Product ID
+             price: document.getElementById("subtotal").value, // Required — Item Unit Price
+             quantity: '1', // Required — Item Quantity
+             title: 'Awesome Product', // Optional — Name of product
+             url: 'https://www.store.com/product1', // Optional — URL for product
+             image_url: 'https://www.store.com/product1/image.jpg' // Optional — URL for product image
+             });
+             // End for loop
+             var _talkable_data = {
+             purchase: {
+                order_number: Math.random().toString(), // Order number, should be unique
+                subtotal: document.getElementById("subtotal").value, // Purchase Subtotal, pre-tax, pre-shipping
+                coupon_code: document.getElementById("couponCode").value, //'FR_NEW_5_OFF',
+                //start cahnges
+//                 shipping_zip: '70448',  // Optional - used for fraud protection by address. Example: '02222'
+                shipping_zip: document.getElementById("zip-code").value,
+                shipping_address: document.getElementById("shipping-address").value,
+//                shipping_address: '2059 Ponderosa Place, Mandeville, Louisiana, 70448, United States', // Full address of the order, make sure to strictly follow a format: 'Apt #, Street address, City, State, ZIP, Country'
+                //end of changes
+                items: _talkable_purchase_items// Coupon code used at checkout, pass null if when no coupon code was used at the checkout.
+              }
+            };
+            window._talkableq.push(['register_purchase', _talkable_data]);
+            console.log("purchase was sent.");
+          }
+          
+       
+          function pushTkbl(){
+            var user = document.getElementById("emailField").value;
+              window._talkableq = window._talkableq || [];
+              _talkableq.push(['init', { site_id: site_data().site_slug, server: site_data().server }]);
+              authoriseUser();
+
+              window._talkableq.push(['register_affiliate', {}]);
+              console.log("affiliate memner created for email '"+user+"'.");
+          }
+          
+          function showRedeemWidget(){
+            var user = document.getElementById("emailField").value;
+            authoriseUser();
+            window._talkableq.push(['show_loyalty', {
+                email: user
+            }]);
+            console.log("show_loyalty executed for '"+user+"'.");
+          }
+          
+          function authoriseUser(){
+            var user = document.getElementById("emailField").value;
+            window._talkableq.push(['authenticate_customer', {
+                email: user, // Optional, pass when available. Example: 'customer@example.com'
+                //     email: 'static.email2@gmail.com',
+                first_name: '', // Optional, pass when available. Example: 'John'
+                last_name: '' // Optional, pass when available. Example: 'Smith'
+                }]);
+          }
+</script>
+        
+        
+      </div>
+      
+<!-- Talkable container -->
+      
+        <div id="talkable-offer"></div>
+        <div id="talkable-loyalty"></div>
+      
+        
+<!-- Post Purchase integration code     
+   
+ End Talkable integration code -->
+<!-- Example row of columns -->
+      <div class="row">
+        <div class="col-lg-4">
+          <h2>Heading</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+       </div>
+        <div class="col-lg-4">
+          <h2>Heading</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+       </div>
+        <div class="col-lg-4">
+          <h2>Heading</h2>
+          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
+          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+        </div>
+      </div>
+
+      <!-- Site footer -->
+      <footer class="footer">
+        <p>&copy; 2016 Talkable, Inc.</p>
+      </footer>
+
+    </div> <!-- /container -->
+  </body>
+</html>
