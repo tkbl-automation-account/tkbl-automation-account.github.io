@@ -127,7 +127,7 @@
           function showRedeemWidget(){
             var user = document.getElementById("emailField").value;
             authoriseUser();
-            window._talkableq.push(['show_loyalty_redeem_widget', {
+            window._talkableq.push(['show_loyalty', {
                 email: user
             }]);
             console.log("show_loyalty_redeem_widget executed for '"+user+"'.");
