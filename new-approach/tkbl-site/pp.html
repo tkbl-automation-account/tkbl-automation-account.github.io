@@ -40,9 +40,9 @@
         Subtotal: <input type="text" id="subtotal" value="100"><br>
         
         <br>
-        <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button><br>
+        <button id="make-purchase" onclick="changeDataAndMakePurahcse()">Purchase with new data</button><br>
         <br>
-        <button onclick="showRedeemWidget()">Show redeem widget</button><br>
+        <button id="trigger-redeem-widget" onclick="showRedeemWidget()">Show redeem widget</button><br>
         <script>
             function changeDataAndMakePurahcse(){
               var couponCode = document.getElementById("couponCode").value; 
