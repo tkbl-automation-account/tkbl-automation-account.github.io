@@ -6,7 +6,7 @@ function build_page(){
          build_integration_fields();
 
          var div = document.createElement("div");
-//         var text = document.createTextNode("Site with new values");
+         var text = document.createTextNode("Site with new values");
          div.appendChild(text);
          document.getElementsByTagName('body')[0].appendChild(div);
 
@@ -49,8 +49,6 @@ function build_page(){
     element.appendChild(br);
 
  }
-
-
 
   function addButton(name, link){
         var li = document.createElement("li"); // <p></p>
