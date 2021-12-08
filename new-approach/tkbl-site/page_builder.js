@@ -21,8 +21,7 @@ function build_page(){
           addButton("EC", 'ec.html');
           addButton("Loyalty", 'loyalty.html');
           addButton("Signup", 'signup.html');
-          addButton("Post Purchase", 'pp2.html');
-          addButton("PP_2(doesn't work)", 'new_pp.html');
+          addButton("Post Purchase", 'pp.html');
           console.log('Navigation buttons were build');
   }
 
