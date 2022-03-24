@@ -33,32 +33,6 @@
         </nav>
     </div>
 
-    <div>
-        <script>
-          var emailValue = 'QA-'+Math.random().toString(36).substring(7)+'@example.com';
-
-
-        </script>
-        Email: <input type="text" id="emailField" value="default.email@gmail.com"><br>
-        <br>
-        <button id="loyalty-signup" onclick="registerLoyalty()">Register in loyalty</button>
-        <br>
-        <script>
-            function registerLoyalty(){
-            var user = document.getElementById("emailField").value;
-
-               window._talkableq.push(['authenticate_customer', {
-                email: user, // Optional, pass when available. Example: 'customer@example.com'
-                //     email: 'static.email2@gmail.com',
-                first_name: '', // Optional, pass when available. Example: 'John'
-                last_name: '' // Optional, pass when available. Example: 'Smith'
-                }]);
-                window._talkableq.push(['show_loyalty', {}]);
-                console.log("loyalty program triggered for email '"+user+"'.");
-            }
-        </script>
-    </div>
-
     <div id="talkable-offer"></div>
     <div id="talkable-loyalty"></div>
 
