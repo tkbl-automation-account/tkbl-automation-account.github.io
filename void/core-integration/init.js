@@ -34,7 +34,7 @@
 
     function tkbl_init(){
             window._talkableq = window._talkableq || [];
-            _talkableq.push(['init', { site_id: site_slug, server: server, email_capture_show_timeout: 1, launch_campaigns: false}]);
+            _talkableq.push(['init', { site_id: site_slug, server: server, email_capture_show_timeout: 1 }]);
     }
 
     function show_email_capture_offer(){
