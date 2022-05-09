@@ -17,7 +17,8 @@
 
     <!--Start Talkable script-->
     <script>
-        tkbl_init_launch_false();
+        window._talkableq = window._talkableq || [];
+        _talkableq.push(['init', { launch_campaigns: false }]);
     </script>
     <!--End Talkable script-->
 

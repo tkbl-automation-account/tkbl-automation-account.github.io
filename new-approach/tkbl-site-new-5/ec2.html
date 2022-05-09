@@ -13,7 +13,8 @@
 
     <!--Start Talkable script-->
     <script>
-      tkbl_init();
+      window._talkableq = window._talkableq || [];
+      _talkableq.push(['init', { launch_campaigns: false, email_capture_show_timeout: 1 }]);
     </script>
     <!--End Talkable script-->
 

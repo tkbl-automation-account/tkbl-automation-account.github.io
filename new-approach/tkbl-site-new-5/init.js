@@ -34,43 +34,43 @@
             window._talkableq = window._talkableq || [];
     }
 
-    function tkbl_init_launch_false(){
-             window._talkableq = window._talkableq || [];
-             _talkableq.push(['init', { launch_campaigns: false }]);
-    }
+//    function tkbl_init_launch_false(){
+//             window._talkableq = window._talkableq || [];
+//             _talkableq.push(['init', { launch_campaigns: false }]);
+//    }
 
-    function show_email_capture_offer(){
-        window._talkableq.push(['show_email_capture_offer', {}]);
-    }
+//    function show_email_capture_offer(){
+//        window._talkableq.push(['show_email_capture_offer', {}]);
+//    }
 
-    function triggerLoyalty(){
-        authenticate_customer('', '', '')
-        show_loyalty();
-    }
+//    function triggerLoyalty(){
+//        authenticate_customer('', '', '')
+//        show_loyalty();
+//    }
 
-    function show_loyalty(){
-        window._talkableq.push(['show_loyalty', {}]);
-    }
+//    function show_loyalty(){
+//        window._talkableq.push(['show_loyalty', {}]);
+//    }
 
-    function authenticate_customer(email, f_name, l_name){
-        window._talkableq.push(['authenticate_customer', {
-                    email: email, // Optional, pass when available. Example: 'customer@example.com'
-                    first_name: f_name, // Optional, pass when available. Example: 'John'
-                    last_name: l_name // Optional, pass when available. Example: 'Smith'
-                    }]);
-        console.log("Authenticated user: " + email);
-    }
+//    function authenticate_customer(email, f_name, l_name){
+//        window._talkableq.push(['authenticate_customer', {
+//                    email: email, // Optional, pass when available. Example: 'customer@example.com'
+//                    first_name: f_name, // Optional, pass when available. Example: 'John'
+//                    last_name: l_name // Optional, pass when available. Example: 'Smith'
+//                    }]);
+//        console.log("Authenticated user: " + email);
+//    }
 
-    function register_affiliate(){
-        window._talkableq.push(['register_affiliate', {}]);
-    }
+//    function register_affiliate(){
+//        window._talkableq.push(['register_affiliate', {}]);
+//    }
 
-    function triggerLoyaltyFor(email){
-           window._talkableq.push(['authenticate_customer', {
-                    email: email, // Optional, pass when available. Example: 'customer@example.com'
-                    first_name: '', // Optional, pass when available. Example: 'John'
-                    last_name: '' // Optional, pass when available. Example: 'Smith'
-                    }]);
-            window._talkableq.push(['show_loyalty', {}]);
-            console.log("loyalty program triggered for email '"+email+"'.");
-    }
+//    function triggerLoyaltyFor(email){
+//           window._talkableq.push(['authenticate_customer', {
+//                    email: email, // Optional, pass when available. Example: 'customer@example.com'
+//                    first_name: '', // Optional, pass when available. Example: 'John'
+//                    last_name: '' // Optional, pass when available. Example: 'Smith'
+//                    }]);
+//            window._talkableq.push(['show_loyalty', {}]);
+//            console.log("loyalty program triggered for email '"+email+"'.");
+//    }
