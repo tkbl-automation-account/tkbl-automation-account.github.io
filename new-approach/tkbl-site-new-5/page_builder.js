@@ -1,13 +1,7 @@
-//document.getElementById("nav_buttons").onload = function() {
-//    build_nav_buttons();
-//};
-
 function build_page() {
     build_integration_fields();
 
     var div = document.createElement("div");
-    // var text = document.createTextNode("Site with new values");
-    // div.appendChild(text);
     document.getElementsByTagName('body')[0].appendChild(div);
 
     populate_integration_values();
