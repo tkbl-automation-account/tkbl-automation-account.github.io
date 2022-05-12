@@ -40,10 +40,15 @@
         <!--                                 value="2059 Default Street, Mandeville, Louisiana, 70448, United States"><br>-->
         <!--        ZIP Code: <input type="text" id="zip-code" value="12345"><br>-->
 
-        Email: <input type="text" id="emailField" value="default.email@gmail.com" style="margin: 5px 0px 5px 0px;"><br>
-        Subtotal: <input type="text" id="subtotal" value="100" style="margin: 5px 0px 5px 0px;"><br>
-        Coupon Code: <input type="text" id="couponCode" value="FR_NEW_5_OFF_DEFAULT" style="margin: 5px 0px 5px 0px;"><br>
-
+        Email: <label for="emailField"></label>
+        <input type="text" id="emailField" value="default.email@gmail.com" style="margin: 5px 0 5px 0;">
+        <br>
+        Subtotal: <label for="subtotal"></label>
+        <input type="text" id="subtotal" value="100" style="margin: 5px 0 5px 0;">
+        <br>
+        Coupon Code: <label for="couponCode"></label>
+        <input type="text" id="couponCode" value="FR_NEW_5_OFF_DEFAULT" style="margin: 5px 0 5px 0;">
+        <br>
         <br>
         <button id="make-purchase" onclick="changeDataAndMakePurchase()">Purchase with new data</button>
         <br>
