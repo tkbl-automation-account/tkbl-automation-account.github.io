@@ -22,10 +22,15 @@ launch_campaign();
 
 function launch_campaign() {
     if (launch_campaigns === 'false') {
-        window._talkableq = window._talkableq || [];
-        _talkableq.push(['init', {launch_campaigns: false}]);
+        set_launch_campaigns_false();
     }
 }
+
+function set_launch_campaigns_false() {
+    window._talkableq = window._talkableq || [];
+    _talkableq.push(['init', {launch_campaigns: false}]);
+}
+
 
 function include(url, id) {
     var script = document.createElement('script');
@@ -78,19 +83,11 @@ function register_affiliate() {
 
 function register_loyalty(email) {
     authenticate_customer(email);
-    // window._talkableq.push(['show_loyalty', {
-    //     email: email
-    // }]);
-    // window._talkableq.push(['authenticate_customer', {
-    //     email: email,
-    //     first_name: '',
-    //     last_name: ''
-    // }]);
     window._talkableq.push(['show_loyalty', {
         optin: true
     }]);
     console.log('Show loyalty:\n' +
         'window._talkableq.push([\'show_loyalty\', {\n' +
-        '        optin: true' +
+        '        optin: true\n' +
         '    }]);');
 }
