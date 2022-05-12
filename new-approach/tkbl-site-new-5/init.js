@@ -13,7 +13,6 @@ const placements_config_src = function (site_slug) {
     return placements_src;
 };
 
-
 include(placements_config_src(site_slug), 'placements_obj');
 document.getElementById("placements_obj").onload = function () {
     setIntegrationSrc(tkbl_integration_src);
@@ -47,11 +46,14 @@ function email_capture_timeout(timeout) {
 
 function show_email_capture_offer() {
     window._talkableq.push(['show_email_capture_offer', {}]);
+    console.log('Show email capture:\n' +
+        'window._talkableq.push([\'show_email_capture_offer\', {}]);');
 }
 
 function show_loyalty() {
     window._talkableq.push(['show_loyalty', {}]);
-    console.log('Show loyalty');
+    console.log('Show loyalty:\n' +
+        'window._talkableq.push([\'show_loyalty\', {}]);');
 }
 
 function authenticate_customer(email) {
@@ -60,10 +62,35 @@ function authenticate_customer(email) {
         first_name: '',
         last_name: ''
     }]);
-    console.log('Authenticated user: ' + email);
+    console.log('Authenticated user: ' + email + '\n' +
+        'window._talkableq.push([\'authenticate_customer\', {\n' +
+        '        email: \'' + email + '\',\n' +
+        '        first_name: \'\',\n' +
+        '        last_name: \'\'\n' +
+        '    }]);');
 }
 
 function register_affiliate() {
     window._talkableq.push(['register_affiliate', {}]);
-    console.log('Register affiliate');
+    console.log('Register affiliate:\n' +
+        'window._talkableq.push([\'register_affiliate\', {}]);');
+}
+
+function register_loyalty(email) {
+    authenticate_customer(email);
+    // window._talkableq.push(['show_loyalty', {
+    //     email: email
+    // }]);
+    // window._talkableq.push(['authenticate_customer', {
+    //     email: email,
+    //     first_name: '',
+    //     last_name: ''
+    // }]);
+    window._talkableq.push(['show_loyalty', {
+        optin: true
+    }]);
+    console.log('Show loyalty:\n' +
+        'window._talkableq.push([\'show_loyalty\', {\n' +
+        '        optin: true' +
+        '    }]);');
 }

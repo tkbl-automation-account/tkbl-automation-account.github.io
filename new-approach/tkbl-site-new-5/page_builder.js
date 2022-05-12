@@ -6,17 +6,17 @@ function build_page() {
     build_integration_fields();
 
     var div = document.createElement("div");
-    var text = document.createTextNode("Site with new values");
-    div.appendChild(text);
+    // var text = document.createTextNode("Site with new values");
+    // div.appendChild(text);
     document.getElementsByTagName('body')[0].appendChild(div);
 
     populate_integration_values();
-    build_integration_buttons();
     build_nav_buttons();
+    build_integration_buttons();
 }
 
 function build_nav_buttons() {
-    var query_params = '?site=' + site_data().site_slug + '&server=' + site_data().server_default + '&launch_campaigns=' + site_data().launch_campaigns;
+    const query_params = '?site=' + site_data().site_slug + '&server=' + site_data().server_default + launch_campaigns_query_param();
     addButton("Index", 'index.html' + query_params);
     addButton("SA", 'sa.html' + query_params);
     addButton("EC", 'ec.html' + query_params);
@@ -24,6 +24,15 @@ function build_nav_buttons() {
     addButton("Signup", 'signup.html' + query_params);
     addButton("Post Purchase", 'pp.html' + query_params);
     console.log('Navigation buttons were build');
+}
+
+function launch_campaigns_query_param() {
+    const launch_campaign_param = site_data().launch_campaigns;
+    if (launch_campaign_param !== 'false') {
+        return '&launch_campaigns=true';
+    } else {
+        return '&launch_campaigns=' + launch_campaign_param;
+    }
 }
 
 function build_integration_fields() {
@@ -51,17 +60,43 @@ function build_integration_field(text, input_id) {
 }
 
 function build_integration_buttons() {
-    add_integration_button('authenticate_customer', function () {authenticate_customer('')});
-    add_integration_button('register_affiliate', function () {register_affiliate()});
-    add_integration_button('show_loyalty', function () {show_loyalty()});
-    add_integration_button('show_email_capture_offer', function () {show_email_capture_offer()});
+    create_email_input();
+    add_integration_button('authenticate_customer', function () {
+        authenticate_customer(document.getElementById("email_field").value)
+    });
+    add_integration_button('register_affiliate', function () {
+        register_affiliate()
+    });
+    add_integration_button('show_loyalty', function () {
+        show_loyalty()
+    });
+    add_integration_button('show_email_capture_offer', function () {
+        show_email_capture_offer()
+    });
+    add_integration_button('register_loyalty', function () {
+        register_loyalty(document.getElementById("email_field").value)
+    });
+}
+
+function create_email_input() {
+    var email_input = document.createElement("INPUT");
+    email_input.setAttribute("type", "text");
+    email_input.setAttribute("id", "email_field");
+    email_input.style.margin = "10px 5px 10px 5px";
+    email_input.placeholder = "Email";
+    email_input.value = "default.email@gmail.com";
+    var element = document.getElementById("integration_buttons");
+    element.appendChild(email_input);
 }
 
 function add_integration_button(name, tlkb_function) {
     const btn = document.createElement("button");
     btn.innerHTML = name;
     btn.onclick = tlkb_function;
-    document.body.appendChild(btn);
+    btn.setAttribute("id", "integration_button");
+    btn.style.margin = "10px 5px 10px 5px";
+    var element = document.getElementById("integration_buttons");
+    element.appendChild(btn);
 }
 
 function addButton(name, link) {
