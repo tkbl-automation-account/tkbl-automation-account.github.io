@@ -11,12 +11,12 @@ const placements_config_src = function (site_slug) {
     var placements_src = "//talkable-labs.herokuapp.com/pl.js?lib=https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + site_slug + ".min.js";
     console.log('Placements config loaded from: ' + placements_src);
     return placements_src;
-};
+}
 
 include(placements_config_src(site_slug), 'placements_obj');
 document.getElementById("placements_obj").onload = function () {
     setIntegrationSrc(tkbl_integration_src);
-};
+}
 
 launch_campaign();
 
@@ -30,7 +30,6 @@ function set_launch_campaigns_false() {
     window._talkableq = window._talkableq || [];
     _talkableq.push(['init', {launch_campaigns: false}]);
 }
-
 
 function include(url, id) {
     var script = document.createElement('script');
@@ -69,10 +68,10 @@ function authenticate_customer(email) {
     }]);
     console.log('Authenticated user: ' + email + '\n' +
         'window._talkableq.push([\'authenticate_customer\', {\n' +
-        '        email: \'' + email + '\',\n' +
-        '        first_name: \'\',\n' +
-        '        last_name: \'\'\n' +
-        '    }]);');
+        '       email: \'' + email + '\',\n' +
+        '       first_name: \'\',\n' +
+        '       last_name: \'\'\n' +
+        '}]);');
 }
 
 function register_affiliate() {
@@ -88,6 +87,23 @@ function register_loyalty(email) {
     }]);
     console.log('Show loyalty:\n' +
         'window._talkableq.push([\'show_loyalty\', {\n' +
-        '        optin: true\n' +
-        '    }]);');
+        '       optin: true\n' +
+        '}]);');
+}
+
+function register_loyalty_new(email) {
+    document.addEventListener('DOMContentLoaded', (event) => {
+        window.talkable.before('show_loyalty', function(data) {
+            data.email = email;
+            data.optin = true;
+            return data;
+        });
+    });
+    console.log('document.addEventListener(\'DOMContentLoaded\', (event) => {\n' +
+        '   window.talkable.before(\'show_loyalty\', function(data) {\n' +
+        '       data.email = ' + email + ';\n' +
+        '       data.optin = true;\n' +
+        '       return data;\n' +
+        '       });\n' +
+        '});');
 }

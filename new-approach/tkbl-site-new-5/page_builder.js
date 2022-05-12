@@ -70,6 +70,9 @@ function build_integration_buttons() {
     add_integration_button('register_loyalty', function () {
         register_loyalty(document.getElementById("email_field").value)
     });
+    add_integration_button('register_loyalty_new', function () {
+        register_loyalty_new(document.getElementById("email_field").value)
+    });
 }
 
 function create_email_input() {
