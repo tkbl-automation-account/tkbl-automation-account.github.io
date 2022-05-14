@@ -16,6 +16,21 @@ const placements_config_src = function (site_slug) {
 include(placements_config_src(site_slug), 'placements_obj');
 document.getElementById("placements_obj").onload = function () {
     setIntegrationSrc(tkbl_integration_src);
+
+    if (launch_campaigns === 'true') {
+        register_new()
+    }
+}
+
+function register_new() {
+    window._talkableq = window._talkableq || []
+    _talkableq.push(["talkable_loaded", function () {
+        window.talkable.before('show_loyalty', function (data) {
+            data.email = localStorage.getItem('loyalty_email');
+            data.optin = true;
+            return data;
+        });
+    }]);
 }
 
 launch_campaign();
@@ -92,18 +107,6 @@ function register_loyalty(email) {
 }
 
 function register_loyalty_new(email) {
-    document.addEventListener('DOMContentLoaded', (event) => {
-        window.talkable.before('show_loyalty', function(data) {
-            data.email = email;
-            data.optin = true;
-            return data;
-        });
-    });
-    console.log('document.addEventListener(\'DOMContentLoaded\', (event) => {\n' +
-        '   window.talkable.before(\'show_loyalty\', function(data) {\n' +
-        '       data.email = ' + email + ';\n' +
-        '       data.optin = true;\n' +
-        '       return data;\n' +
-        '       });\n' +
-        '});');
+    localStorage.setItem('loyalty_email', email);
+    window.location.reload();
 }
