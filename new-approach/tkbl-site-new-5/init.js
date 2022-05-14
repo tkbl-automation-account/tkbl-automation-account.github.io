@@ -60,7 +60,7 @@ function setIntegrationSrc(src_value) {
 
 function email_capture_timeout(timeout) {
     window._talkableq = window._talkableq || [];
-    _talkableq.push(['init', {launch_campaigns: false, email_capture_show_timeout: timeout}]);
+    _talkableq.push(['init', {email_capture_show_timeout: timeout}]);
 }
 
 function show_email_capture_offer() {
