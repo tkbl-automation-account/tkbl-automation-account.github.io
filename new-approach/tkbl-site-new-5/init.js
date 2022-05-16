@@ -8,7 +8,7 @@ const placements_config_src = function (site_slug) {
     if (server === '//talkable.com') {
         staging_prefix = '';
     }
-    var placements_src = "//talkable-labs.herokuapp.com/pl.js?lib=https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + site_slug + ".min.js?v=3";
+    var placements_src = "//talkable-labs.herokuapp.com/pl.js?lib=https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + site_slug + ".min.js";
     console.log('Placements config loaded from: ' + placements_src);
     return placements_src;
 }
