@@ -12,13 +12,11 @@
         return placements_src;
     }
 
-
     include(placements_config_src(site_slug), 'placements_obj');
     document.getElementById("placements_obj").onload = function() {
         setIntegrationSrc(tkbl_integration_src);
     };
     tkbl_init();
-
 
     function include(url, id) {
             var script = document.createElement('script');
@@ -34,7 +32,7 @@
 
     function tkbl_init(){
             window._talkableq = window._talkableq || [];
-            _talkableq.push(['init', { site_id: site_slug, server: server, launch_campaigns: false, email_capture_show_timeout: 1 }]);
+            _talkableq.push(['init', { site_id: site_slug, server: server, email_capture_show_timeout: 1}]);
     }
 
     function show_email_capture_offer(){
@@ -65,8 +63,7 @@
 
     function triggerLoyaltyFor(email){
            window._talkableq.push(['authenticate_customer', {
-                 email: email, // Optional, pass when available. Example: 'customer@example.com'
-                    //     email: 'static.email2@gmail.com',
+                    email: email, // Optional, pass when available. Example: 'customer@example.com'
                     first_name: '', // Optional, pass when available. Example: 'John'
                     last_name: '' // Optional, pass when available. Example: 'Smith'
                     }]);

@@ -49,7 +49,7 @@
             site_slug: site,
             server: getServer(server),
             tkbl_integration_scr: tkbl_integration
-//            tkbl_integration_scr:"https://learn.talkable.com/pavel/one-call/lib.js"
+            //tkbl_integration_scr:"integration.js"
         };
         return data;
     }
