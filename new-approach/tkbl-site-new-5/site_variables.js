@@ -10,7 +10,7 @@ function getIntegrationSrc(site) {
     if (server === 'prod') {
         staging_prefix = '';
     }
-    var src = "https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + queryParams.site + ".min.js";
+    var src = "https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + queryParams.site + ".min.js?v=2";
     console.log('Placements config loaded from: ' + src);
     return src;
 }
