@@ -17,9 +17,7 @@ const placements_config_src = function (site_slug) {
 include(placements_config_src(site_slug), 'placements_obj');
 document.getElementById("placements_obj").onload = function () {
 
-    console.log("Custom JS lib before: " + custom_integration_link);
-    if (custom_integration_link === null || custom_integration_link === "" || custom_integration_link === "undefined") {
-        console.log("Custom JS lib after: " + custom_integration_link);
+    if (custom_integration_link !== undefined) {
         setIntegrationSrc(custom_integration_link);
     } else {
         setIntegrationSrc(tkbl_integration_src);
