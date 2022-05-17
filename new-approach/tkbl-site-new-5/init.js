@@ -2,6 +2,7 @@ var site_slug = site_data().site_slug;
 var server = site_data().server;
 var tkbl_integration_src = site_data().tkbl_integration_scr;
 var launch_campaigns = site_data().launch_campaigns;
+var custom_integration_link = site_data().custom_integration_link;
 
 const placements_config_src = function (site_slug) {
     var staging_prefix = '-staging';
@@ -15,7 +16,12 @@ const placements_config_src = function (site_slug) {
 
 include(placements_config_src(site_slug), 'placements_obj');
 document.getElementById("placements_obj").onload = function () {
-    setIntegrationSrc(tkbl_integration_src);
+
+    if (custom_integration_link !== null || custom_integration_link !== "" || custom_integration_link !== "false") {
+        setIntegrationSrc(custom_integration_link);
+    } else {
+        setIntegrationSrc(tkbl_integration_src);
+    }
 
     if (launch_campaigns === 'true') {
         register_new()

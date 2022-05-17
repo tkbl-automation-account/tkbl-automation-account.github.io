@@ -4,6 +4,7 @@ var site = queryParams.site;
 var server = queryParams.server;
 var launch_campaigns = queryParams.launch_campaigns;
 var tkbl_integration = getIntegrationSrc(site);
+var custom_integration_link = queryParams.integration_link;
 
 function getIntegrationSrc(site) {
     var staging_prefix = '-staging';
@@ -49,7 +50,8 @@ var site_data = function () {
         server: getServer(server),
         server_default: queryParams.server,
         tkbl_integration_scr: tkbl_integration,
-        launch_campaigns: launch_campaigns
+        launch_campaigns: launch_campaigns,
+        custom_integration_link: custom_integration_link,
         //tkbl_integration_scr:"integration.js"
     };
     return data;
