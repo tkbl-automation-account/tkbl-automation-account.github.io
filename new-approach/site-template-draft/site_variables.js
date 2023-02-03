@@ -1,8 +1,8 @@
 const queryParams = getUrlParams(window.location.search);
 
-var site = queryParams.site;
-var server = queryParams.server;
-//var launch_campaigns = queryParams.launch_campaigns;
+var site = queryParams.site.toLowerCase();
+var server_name = queryParams.server;
+var launch_campaigns = queryParams.launch_campaigns;
 var custom_integration_link = queryParams.integration_link;
 
 function getIntegrationSrc() {
@@ -19,10 +19,10 @@ function getIntegrationSrc() {
 
 function getPerClientIntegrationSrc(site) {
     var staging_prefix = '-staging';
-    if (server === 'prod') {
+    if (server_name === 'prod') {
         staging_prefix = '';
     }
-    var src = "https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + queryParams.site + ".min.js";
+    var src = "https://curebit" + staging_prefix + ".s3.amazonaws.com/integration/clients/" + site + ".min.js";
     return src;
 }
 
@@ -63,8 +63,8 @@ function getUrlParams(search) {
 
 var site_data = function () {
     var data = {
-        site_slug: site.toLowerCase(),
-        server: getServer(server),
+        site_slug: site,
+        server: getServer(queryParams.server),
         server_name: queryParams.server,
         tkbl_integration_scr: getIntegrationSrc(),
         launch_campaigns: launch_campaigns_flag(),
