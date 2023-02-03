@@ -63,7 +63,7 @@ function getUrlParams(search) {
 
 var site_data = function () {
     var data = {
-        site_slug: site,
+        site_slug: site.toLowerCase(),
         server: getServer(server),
         server_name: queryParams.server,
         tkbl_integration_scr: getIntegrationSrc(),
