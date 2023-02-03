@@ -15,16 +15,25 @@ function build_page(){
          build_nav_buttons();
  }
 
- function build_nav_buttons(){
-          addButton("Index", 'index.html');
-          addButton("SA", 'sa.html');
-          addButton("EC", 'ec.html');
-          addButton("Loyalty", 'loyalty.html');
-          addButton("Signup", 'signup.html');
-          addButton("Post Purchase", 'pp2.html');
-          addButton("PP_2(doesn't work)", 'new_pp.html');
-          console.log('Navigation buttons were build');
-  }
+ function build_nav_buttons() {
+     const query_params = '?site=' + site_data().site_slug + '&server=' + site_data().server_name + launch_campaigns_query_param();
+     addButton("Index", 'index.html' + query_params);
+     addButton("SA", 'sa.html' + query_params);
+     addButton("EC", 'ec.html' + query_params);
+     addButton("Loyalty", 'loyalty.html' + query_params);
+     addButton("Signup", 'signup.html' + query_params);
+     addButton("Post Purchase", 'pp.html' + query_params);
+     console.log('Navigation buttons were build');
+ }
+
+ function launch_campaigns_query_param() {
+     const launch_campaign_param = site_data().launch_campaigns;
+     if (launch_campaign_param !== 'false') {
+         return '&launch_campaigns=true';
+     } else {
+         return '&launch_campaigns=' + launch_campaign_param;
+     }
+ }
 
  function build_integration_fields(){
     build_integration_field("Site slug: ", "site-slug");
