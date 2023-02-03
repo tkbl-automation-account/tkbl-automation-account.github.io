@@ -1,6 +1,6 @@
     var site_slug = site_data().site_slug;
     var server = site_data().server;
-    var tkbl_integration_src = site_data().tkbl_integration_scr
+    var tkbl_integration_src = site_data().tkbl_integration_scr;
 
     var placements_config_src = function(site_slug){
         var staging_prefix = '-staging';
