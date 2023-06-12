@@ -61,6 +61,17 @@ function getUrlParams(search) {
     return params
 }
 
+//https://admin.void.talkable.com/sites/automation-site-562130229388
+//https://admin.talkable.com/sites/automation-site-562130229388
+function build_site_admin_url() {
+    var sub_domain = server_name + ".";
+    if(server_name === 'prod'){
+        sub_domain = "";
+    }
+    return "https://admin." + sub_domain + "talkable.com/sites/" + site;
+
+}
+
 var site_data = function () {
     var data = {
         site_slug: site,
@@ -68,6 +79,7 @@ var site_data = function () {
         server_name: queryParams.server,
         tkbl_integration_scr: getIntegrationSrc(),
         launch_campaigns: launch_campaigns_flag(),
+        site_admin_url: build_site_admin_url()
     };
     return data;
 }

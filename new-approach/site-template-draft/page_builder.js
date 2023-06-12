@@ -6,8 +6,16 @@ function build_page(){
          build_integration_fields();
 
          var div = document.createElement("div");
-         var text = document.createTextNode("Site with new values");
+         div.classList.add("common");
+         var text = document.createTextNode("Talkable Admin link:");
          div.appendChild(text);
+         div.appendChild(document.createElement("br"));
+         var siteUrl = site_data().site_admin_url;
+         var a = document.createElement("a")
+         var linkText = document.createTextNode(siteUrl);
+         a.href = siteUrl;
+         a.appendChild(linkText);
+         div.appendChild(a);
          document.getElementsByTagName('body')[0].appendChild(div);
 
          populate_integration_values();
@@ -48,15 +56,25 @@ function build_page(){
  }
 
  function build_integration_field(text, input_id){
+
+    var key_div = document.createElement("div");
     var text = document.createTextNode(text);
+    key_div.appendChild(text);
+    key_div.classList.add("key");
     var input = document.createElement("input");
-    var br = document.createElement("br");
+    input.classList.add("data_field");
     input.id = input_id
     input.disabled = 'true'
     var element = document.getElementById("site-values");
-    element.appendChild(text);
-    element.appendChild(input);
-    element.appendChild(br);
+
+    var div = document.createElement("div");
+    div.appendChild(key_div);
+    div.appendChild(input);
+    element.appendChild(div);
+//    element.appendChild(text);
+//    element.appendChild(input);
+//    var br = document.createElement("br");
+//    element.appendChild(br);
 
  }
 
