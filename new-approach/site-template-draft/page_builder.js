@@ -28,6 +28,7 @@ function build_page(){
      addButton("Index", 'index.html' + query_params);
      addButton("SA", 'sa.html' + query_params);
      addButton("EC", 'ec.html' + query_params);
+     addButton("Claim by name", 'cn_page.html' + query_params);
      addButton("Loyalty", 'loyalty.html' + query_params);
      addButton("Signup", 'signup.html' + query_params);
      addButton("Post Purchase", 'pp.html' + query_params);
