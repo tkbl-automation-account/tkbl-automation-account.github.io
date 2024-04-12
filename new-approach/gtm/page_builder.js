@@ -27,7 +27,8 @@ function build_page(){
      const query_params = '?site=' + site_data().site_slug + '&server=' + site_data().server_name + launch_campaigns_query_param();
      addButton("Index", 'index.html' + query_params);
      addButton("SA", 'sa.html' + query_params);
-     addButton("Post Purchase", 'pp.html' + query_params);
+     addButton("Post Purchase", 'pp2.html' + query_params);
+     addButton("Post Purchase2", 'new_pp.html' + query_params);
      console.log('Navigation buttons were build');
  }
 
