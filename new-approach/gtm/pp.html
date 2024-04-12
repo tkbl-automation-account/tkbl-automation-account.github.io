@@ -43,6 +43,7 @@
         <br>
         <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button><br>
         <br>
+        <button onclick="showRedeemWidget()">Show redeem widget</button><br>
         <script>
             function changeDataAndMakePurahcse(){
               var couponCode = document.getElementById("couponCode").value; 
@@ -80,6 +81,7 @@
             console.log("purchase was sent.");
           }
 
+
           function pushTkbl(){
             var user = document.getElementById("emailField").value;
               window._talkableq = window._talkableq || [];
@@ -88,6 +90,15 @@
 
               window._talkableq.push(['register_affiliate', {}]);
               console.log("affiliate memner created for email '"+user+"'.");
+          }
+
+          function showRedeemWidget(){
+            var user = document.getElementById("emailField").value;
+            authoriseUser();
+            window._talkableq.push(['show_loyalty', {
+                email: user
+            }]);
+            console.log("show_loyalty executed for '"+user+"'.");
           }
 
           function authoriseUser(){
