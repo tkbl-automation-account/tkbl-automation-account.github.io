@@ -9,16 +9,40 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
-    <script src="page_builder.js"></script>
-    <script src="site_variables.js"></script>
-    <script src="init.js"></script>
+    <!-- <script src="page_builder.js"></script> -->
+    <!-- <script src="site_variables.js"></script> -->
+    <!-- <script src="init.js"></script> -->
     <!--Start Talkable script-->
-    <script>
+    <!-- <script>
       tkbl_init();
-    </script>
+    </script> -->
     <!--End Talkable script--> 
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-PDMN52WF');</script>
+          <!-- End Google Tag Manager -->
+      
+          <script>
+              const queryString = window.location.search;
+              const urlParams = new URLSearchParams(queryString);
+      
+              window.dataLayer = window.dataLayer || [];
+              dataLayer.push({
+                  'site': urlParams.get('site'),
+                  'server': urlParams.get('server')
+              });
+          </script>
   </head>
-  <body onload="build_page()">
+  <!-- <body onload="build_page()"> -->
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDMN52WF"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  
     <pre id="site-values"></pre>
     <div class="container">
       <div class="masthead">
