@@ -28,4 +28,3 @@ function build_nav_buttons() {
         navButtons.appendChild(li);
     }
 }
-
