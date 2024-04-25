@@ -16,7 +16,7 @@ dataLayer.push({
     var tkbl = document.createElement('script');
     tkbl.type = 'text/javascript';
     tkbl.async = true;
-    tkbl.src = 'https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/' + urlParams.get('site') + '.min.js';
+    tkbl.src = 'https://curebit-staging.s3.amazonaws.com/integration/clients/' + urlParams.get('site') + '.min.js';
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(tkbl, s);
 })();
