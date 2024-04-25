@@ -42,6 +42,14 @@ function hidePurchaseForm() {
     document.getElementById('talkableCampaignButton').style.display = 'block'; // Show campaign button when not on the purchase form
 }
 
+function hideTalkableOffer() {
+    document.getElementById('talkable-offer').style.display = 'none';
+}
+
+function showTalkableOffer() {
+    document.getElementById('talkable-offer').style.display = 'block';
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("displaySiteId").textContent = urlParams.get('site');
     hidePurchaseForm(); // Initially hide the purchase form and show the campaign button
@@ -69,11 +77,3 @@ document.addEventListener("DOMContentLoaded", function() {
         alert("Purchase registered successfully!");
     });
 });
-
-function hideTalkableOffer() {
-    document.getElementById('talkable-offer').style.display = 'none';
-}
-
-function showTalkableOffer() {
-    document.getElementById('talkable-offer').style.display = 'block';
-}
