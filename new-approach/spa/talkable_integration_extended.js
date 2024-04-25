@@ -69,3 +69,11 @@ document.addEventListener("DOMContentLoaded", function() {
         alert("Purchase registered successfully!");
     });
 });
+
+function hideTalkableOffer() {
+    document.getElementById('talkable-offer').style.display = 'none';
+}
+
+function showTalkableOffer() {
+    document.getElementById('talkable-offer').style.display = 'block';
+}
