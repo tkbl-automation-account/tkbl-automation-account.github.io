@@ -32,10 +32,10 @@ function triggerTalkableCampaign() {
 }
 
 // Show and Hide Purchase Form
-function showPurchaseForm() {
-    document.getElementById('purchaseFormSection').style.display = 'block';
-    document.getElementById('talkableCampaignButton').style.display = 'none'; // Hide campaign button when showing the purchase form
-}
+//function showPurchaseForm() {
+//    document.getElementById('purchaseFormSection').style.display = 'block';
+//    document.getElementById('talkableCampaignButton').style.display = 'none'; // Hide campaign button when showing the purchase form
+//}
 
 function hidePurchaseForm() {
     document.getElementById('purchaseFormSection').style.display = 'none';
@@ -70,10 +70,32 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+//function hideTalkableOffer() {
+//    document.getElementById('talkable-offer').style.display = 'none';
+//}
+//
+//function showTalkableOffer() {
+//    document.getElementById('talkable-offer').style.display = 'block';
+//}
+
 function hideTalkableOffer() {
     document.getElementById('talkable-offer').style.display = 'none';
+    document.getElementById('homeButton').classList.add('active');
+    document.getElementById('purchaseButton').classList.remove('active');
+    document.getElementById('standaloneButton').classList.remove('active');
 }
 
 function showTalkableOffer() {
     document.getElementById('talkable-offer').style.display = 'block';
+    document.getElementById('homeButton').classList.remove('active');
+    document.getElementById('purchaseButton').classList.remove('active');
+    document.getElementById('standaloneButton').classList.add('active');
+}
+
+function showPurchaseForm() {
+    document.getElementById('purchaseFormSection').style.display = 'block';
+    document.getElementById('talkableCampaignButton').style.display = 'none';
+    document.getElementById('homeButton').classList.remove('active');
+    document.getElementById('purchaseButton').classList.add('active');
+    document.getElementById('standaloneButton').classList.remove('active');
 }
