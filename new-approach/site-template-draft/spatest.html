@@ -35,14 +35,15 @@
         </nav>
     </div>
 
-    <div id="talkable-offer"></div>
+
 
     <!-- Add a button -->
+    <br/>
     <button id="first-button">First button</button>
 
     <!-- Add a script to handle button click -->
     <script>
-        document.querySelector('#myButton').addEventListener('click', function() {
+        document.querySelector('#first-button').addEventListener('click', function() {
             document.querySelector('#talkable-offer').remove();
             const newTalkableContainer = document.createElement('div');
             newTalkableContainer.id = 'talkable-offer';
@@ -50,17 +51,20 @@
         });
     </script>
 
-    <br>
+    <br/>
     <button id="second-button">Second button</button>
+    <br/>
 
     <!-- Add a script to handle button click -->
     <script>
-        document.querySelector('#myButton').addEventListener('click', function() {
+        document.querySelector('#second-button').addEventListener('click', function() {
             const url = new URL(location);
             url.searchParams.set("foo", "bar");
             history.pushState({}, "", url);
         });
     </script>
+
+    <div id="talkable-offer"></div>
 
 </div>
 </body>
