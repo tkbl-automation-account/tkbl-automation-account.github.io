@@ -37,6 +37,31 @@
 
     <div id="talkable-offer"></div>
 
+    <!-- Add a button -->
+    <button id="first-button">First button</button>
+
+    <!-- Add a script to handle button click -->
+    <script>
+        document.querySelector('#myButton').addEventListener('click', function() {
+            document.querySelector('#talkable-offer').remove();
+            const newTalkableContainer = document.createElement('div');
+            newTalkableContainer.id = 'talkable-offer';
+            document.body.appendChild(newTalkableContainer);
+        });
+    </script>
+
+    <br>
+    <button id="second-button">Second button</button>
+
+    <!-- Add a script to handle button click -->
+    <script>
+        document.querySelector('#myButton').addEventListener('click', function() {
+            const url = new URL(location);
+            url.searchParams.set("foo", "bar");
+            history.pushState({}, "", url);
+        });
+    </script>
+
 </div>
 </body>
 </html>
