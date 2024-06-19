@@ -33,6 +33,17 @@ function getServer(server) {
     }
 }
 
+//https://admin.void.talkable.com/sites/automation-site-562130229388
+//https://admin.talkable.com/sites/automation-site-562130229388
+function build_site_admin_url() {
+    var sub_domain = server_name + ".";
+    if(server_name === 'prod'){
+        sub_domain = "";
+    }
+    return "https://admin." + sub_domain + "talkable.com/sites/" + site;
+
+}
+
 function getUrlParams(search) {
     const hashes = search.slice(search.indexOf('?') + 1).split('&')
     const params = {}

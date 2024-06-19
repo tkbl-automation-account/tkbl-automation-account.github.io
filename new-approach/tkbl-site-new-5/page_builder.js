@@ -2,6 +2,18 @@ function build_page() {
     build_integration_fields();
 
     var div = document.createElement("div");
+
+    div.classList.add("common");
+    var text = document.createTextNode("Talkable Admin link:");
+    div.appendChild(text);
+    div.appendChild(document.createElement("br"));
+    var siteUrl = site_data().site_admin_url;
+    var a = document.createElement("a")
+    var linkText = document.createTextNode(siteUrl);
+    a.href = siteUrl;
+             a.appendChild(linkText);
+             div.appendChild(a);
+
     document.getElementsByTagName('body')[0].appendChild(div);
 
     populate_integration_values();
