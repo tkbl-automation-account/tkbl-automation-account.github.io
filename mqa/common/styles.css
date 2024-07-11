@@ -1,0 +1,18 @@
+.show-data {
+    width: 500px;
+}
+
+.key{
+    width: 100px;
+    box-sizing: content-box;
+    display:inline-block;
+}
+
+.data_field {
+    width: 500px;
+}
+
+.common {
+   margin: 10px;
+}
+
