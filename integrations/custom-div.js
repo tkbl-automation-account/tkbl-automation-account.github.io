@@ -1,6 +1,6 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/blob/69d668734f30098b1746ae68cd2ea0ebc521e959/src/integration.js
-//updated on 11 Jul 2024, 10:23
+//updated on 19 Jul 2024, 11:46
 
 /**
  * @prettier
@@ -350,37 +350,22 @@
           utils.location_parameter('tkbl_campaign_id') ||
           utils.location_parameter('campaign_tags');
 
-        if (
-          showCampaignCondition ||
-          (referralPlacements.length > 0 && referralPlacements !== EMPTY_PLACEMENTS)
-        ) {
-          window._talkableq.push(['register_affiliate', {}]);
+        function triggerPlacements(placements, method) {
+          if (
+            showCampaignCondition ||
+            (placements.length > 0 && placements !== EMPTY_PLACEMENTS)
+          ) {
+            placements.forEach(function (placement) {
+              window._talkableq.push([method, { matched_placement_ids: [placement] }]);
+            });
+          }
         }
 
-        if (
-          showCampaignCondition ||
-          (conversionPlacements.length > 0 && conversionPlacements !== EMPTY_PLACEMENTS)
-        ) {
-          window._talkableq.push(['show_email_capture_offer', {}]);
-        }
-
-        var showLoyaltyDashboard =
-          loyaltyDashboardPlacements.length > 0 &&
-          loyaltyDashboardPlacements !== EMPTY_PLACEMENTS;
-        var showLoyaltyWidget =
-          loyaltyWidgetPlacements.length > 0 &&
-          loyaltyWidgetPlacements !== EMPTY_PLACEMENTS;
-
-        if (showCampaignCondition || showLoyaltyDashboard || showLoyaltyWidget) {
-          window._talkableq.push(['show_loyalty', {}]);
-        }
-
-        var showClaimByNameCampaigns =
-          nameSharingPlacements.length > 0 && nameSharingPlacements !== EMPTY_PLACEMENTS;
-
-        if (showCampaignCondition || showClaimByNameCampaigns) {
-          window._talkableq.push(['show_claim_by_name', {}]);
-        }
+        triggerPlacements(referralPlacements, 'register_affiliate');
+        triggerPlacements(conversionPlacements, 'show_email_capture_offer');
+        triggerPlacements(loyaltyDashboardPlacements, 'show_loyalty');
+        triggerPlacements(loyaltyWidgetPlacements, 'show_loyalty');
+        triggerPlacements(nameSharingPlacements, 'show_claim_by_name');
       },
 
       notifyIntegrationError: function (message, dev) {
@@ -725,15 +710,17 @@
       addIframeElement: function (url, options) {
         utils.log('addIframeElement: ' + url);
 
-        options = utils.clone(options || {});
-        options.frameBorder = '0';
+        var uniqueName = utils.generateRandomIframeName();
+
+        (options = utils.clone(options || {})).frameBorder = '0';
         options.allowTransparency = true;
         options.src = url;
         options.allow = 'camera *;microphone *;web-share';
+        options.name = uniqueName; // Set the unique name for the iframe
+
         var container = options.container || utils.generateRandomIframeName();
 
         delete options.container;
-        utils.addRandomIframeName(options);
 
         var iframe = null;
         var styleTag = null;
@@ -742,6 +729,7 @@
         iframe.style.display = 'none';
         iframe.style.opacity = '0';
         this.setAttributes(iframe, options);
+
         this.insertIframeIntoContainer(iframe, container);
 
         utils.subscribe('responsive_iframe_height', iframe.name, function (data, iframe) {
@@ -756,82 +744,68 @@
           ) {
             return;
           }
-          if (!data) {
-            return;
-          }
-          if (!data.offer_state) {
-            return;
-          }
-          if (!data.offer_state_attribute) {
-            return;
-          }
-          if (data.width) {
-            iframe.style.width = data.width;
-          }
-          if (data.height) {
-            iframe.style.height = data.height;
-          }
 
-          if (data.integration_css) {
-            utils.setIntegrationCss(data.integration_css);
-          }
-          currentAttribute = document.body.getAttribute(data.offer_state_attribute) || '';
-          if (
-            data.action === 'add' &&
-            currentAttribute.indexOf(data.offer_state) === -1
-          ) {
-            document.body.setAttribute(
-              data.offer_state_attribute,
-              (data.offer_state + ' ' + currentAttribute).trim()
-            );
-          } else if (data.action === 'remove') {
-            document.body.setAttribute(
-              data.offer_state_attribute,
-              currentAttribute.replace(data.offer_state, '').trim()
-            );
-          } else if (data.action === 'set') {
-            document.body.setAttribute(data.offer_state_attribute, data.offer_state);
-          }
-
-          setTimeout(function () {
-            if (document.all && !window.atob) {
-              // need to update DOM to apply styles in IE <= 9
-              // eslint-disable-next-line no-self-assign
-              document.body.className = document.body.className;
+          if (data && data.offer_state && data.offer_state_attribute) {
+            if (data.width) {
+              iframe.style.width = data.width;
             }
-          }, 0);
+            if (data.height) {
+              iframe.style.height = data.height;
+            }
+            if (data.integration_css) {
+              utils.setIntegrationCss(data.integration_css);
+            }
+
+            var currentAttribute =
+              document.body.getAttribute(data.offer_state_attribute) || '';
+
+            if (
+              data.action === 'add' &&
+              currentAttribute.indexOf(data.offer_state) === -1
+            ) {
+              document.body.setAttribute(
+                data.offer_state_attribute,
+                (data.offer_state + ' ' + currentAttribute).trim()
+              );
+            } else if (data.action === 'remove') {
+              document.body.setAttribute(
+                data.offer_state_attribute,
+                currentAttribute.replace(data.offer_state, '').trim()
+              );
+            } else if (data.action === 'set') {
+              document.body.setAttribute(data.offer_state_attribute, data.offer_state);
+            }
+          }
         });
 
-        utils.subscribe(
-          'change_loyalty_member_state',
-          iframe.name,
-          function (data, iframe) {
-            if (data.action === 'remove') {
-              utils.deleteCookie(LOYALTY_OPTIN_KEY);
-            } else if (data.action === 'set') {
-              utils.setCookie(LOYALTY_OPTIN_KEY, true);
-            }
+        utils.subscribe('change_loyalty_member_state', iframe.name, function (data) {
+          if (data.action === 'remove') {
+            utils.deleteCookie(LOYALTY_OPTIN_KEY);
+          } else if (data.action === 'set') {
+            utils.setCookie(LOYALTY_OPTIN_KEY, true);
           }
-        );
+        });
 
-        utils.subscribe('cookies_consent', iframe.name, function (data, iframe) {
+        utils.subscribe('cookies_consent', iframe.name, function () {
           utils.setCookie(UUID_KEY, utils.getAllCookies());
         });
 
-        utils.subscribe('set_location', iframe.name, function (data, iframe) {
-          if (!data) {
-            return;
-          }
-          if (utils.isInIframe()) {
-            var msg_data = {
-              type: 'set_location',
-              iframe_name: window.name,
-              data: data,
-            };
+        utils.subscribe('set_location', iframe.name, function (data) {
+          if (data) {
+            if (utils.isInIframe()) {
+              var msg_data = {
+                type: 'set_location',
+                iframe_name: window.name,
+                data: data,
+              };
 
-            utils.postmessage.send(msg_data, '*', window.parent);
-          } else if (data.href && data.href.toLowerCase().indexOf('javascript:') === -1) {
-            window.location.href = data.href;
+              utils.postmessage.send(msg_data, '*', window.parent);
+            } else if (
+              data.href &&
+              data.href.toLowerCase().indexOf('javascript:') === -1
+            ) {
+              window.location.href = data.href;
+            }
           }
         });
 
@@ -847,8 +821,6 @@
         });
 
         utils.subscribe('offer_close', iframe.name, function (data, iframe) {
-          // reset iframe load state
-
           var index = utils.lastLoadedIframeName.indexOf(iframe.name);
 
           if (index !== -1) {
@@ -856,11 +828,11 @@
           }
 
           iframe.style.display = 'none';
-          styleTag && styleTag.remove();
+          if (styleTag) {
+            styleTag.remove();
+          }
           styleTag = null;
 
-          // Otherwise it causes a never-ending tab window spinner in Chrome
-          // Yes, the delay should be that big, otherwise it won’t fix the issue
           setTimeout(function () {
             iframe.remove();
             iframe = null;
@@ -873,7 +845,6 @@
           if (data.perform_snapshot) {
             utils.scrapeDOM();
           }
-
           if (utils.gleamRewardCallback && data.gleam_reward) {
             try {
               utils.gleamRewardCallback(data.gleam_reward);
@@ -883,31 +854,34 @@
           }
 
           if (
-            data.campaign_appearance === 'inline' &&
-            iframe.parentNode &&
-            utils.isGenerated(iframe.parentNode)
+            data.integration_css ||
+            (data.integration_css && data.integration_css.css)
           ) {
-            return;
-          }
-          if (!data.integration_css && !data.integration_css.css) {
-            return;
-          }
-          styleTag = document.createElement('style');
-          styleTag.id = data.integration_css.attribute_value;
-          styleTag.dataset.talkableIntegrationCss = true;
-          styleTag.type = 'text/css';
+            styleTag = document.createElement('style');
+            styleTag.id = data.integration_css.attribute_value;
+            styleTag.dataset.talkableIntegrationCss = true;
+            styleTag.type = 'text/css';
+            if (styleTag.styleSheet) {
+              styleTag.styleSheet.cssText = data.integration_css.css;
+            } else {
+              styleTag.appendChild(document.createTextNode(data.integration_css.css));
+            }
 
-          if (styleTag.styleSheet) {
-            styleTag.styleSheet.cssText = data.integration_css.css;
-          } else {
-            styleTag.appendChild(document.createTextNode(data.integration_css.css));
-          }
+            var styleTagNode = document.getElementById(
+              data.integration_css.attribute_value
+            );
 
-          if (!document.getElementById(data.integration_css.attribute_value)) {
-            document.body && document.body.appendChild(styleTag);
+            if (styleTagNode) {
+              styleTagNode.remove();
+            }
+
+            if (document.body) {
+              document.body.appendChild(styleTag);
+            }
           }
 
           if (
+            data.integration_css &&
             data.integration_css.attribute_name &&
             data.integration_css.attribute_value
           ) {
@@ -920,7 +894,6 @@
           if (data.page_title) {
             iframe.setAttribute('title', data.page_title);
           }
-
           if (data.campaign_id) {
             utils.loadTime.campaignLoaded(data.campaign_id);
           }
