@@ -1,7 +1,12 @@
-// https://talkable.atlassian.net/browse/PR-20829
-// https://github.com/talkable/talkable-integration/pull/708
-// Updated on 02.07.2024 10:30
+// https://talkable.atlassian.net/browse/PR-22228
+// https://github.com/talkable/talkable-integration/blob/rosul-PR-22228/src/integration.js
+// https://github.com/talkable/talkable-integration/pull/744
+// Updated on 24.07.2024 10:30
 
+
+/**
+ * @prettier
+ */
 
 /**
  * @prettier
@@ -15,8 +20,6 @@
     var UUID_KEY = 'tkbl_session';
     var UUID_DEPRECATED_KEY = 'tkbl_cvuuid';
     var UUID_SESSION_KEY = 'tkbl_session_id';
-    var UUID_REGEXP =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[34][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
     var LOYALTY_OPTIN_KEY = 'tkbl_loyalty_optin';
     // We send something to backend
     // To track that no placements were matched
@@ -45,6 +48,7 @@
       launch_campaigns: true,
       launch_campaigns_retry_delay: 1000,
       launch_campaigns_retry_count: 10,
+      launch_campaigns_spa_delay: 200,
     };
 
     var methods = {};
@@ -52,7 +56,6 @@
       lastLoadedIframeName: [],
       gleamRewardCallback: undefined,
       placements: [],
-      matchedCountries: [],
 
       define: function (name, callback) {
         if (methods[name]) {
@@ -160,6 +163,16 @@
         return dst;
       },
 
+      withoutProperties: function (properties, object) {
+        var result = utils.clone(object);
+
+        for (var i = 0; i < properties.length; i++) {
+          delete result[properties[i]];
+        }
+
+        return result;
+      },
+
       clone: function (object) {
         // WARNING: this is not a deep clone!
         return utils.merge(object, {});
@@ -180,30 +193,17 @@
         },
 
         listen: function (callback) {
-          var parseHostname = function (url) {
-            var parser = document.createElement('a');
-
-            parser.href = url;
-
-            return parser.hostname;
-          };
-
           var isOriginAllowed = function (origin) {
             if (!origin) {
               return false;
             }
 
-            var originHostname = parseHostname(origin);
+            var originHostname = utils.parseHostname(origin);
 
             return (
               /\.talkable\.(com|local)$/.test(originHostname) ||
-              /^curebit(-(development|staging|test))?\.s3\.amazonaws\.com$/.test(
-                originHostname
-              ) ||
-              /^(d2jjzw81hqbuqv|d3pfcpkel4p4mo|di6re4dxelnn2)\.cloudfront\.net$/.test(
-                originHostname
-              ) ||
-              parseHostname(config.server) === originHostname
+              utils.isIntegrationLibraryHostname(originHostname) ||
+              utils.parseHostname(config.server) === originHostname
             );
           };
 
@@ -488,10 +488,7 @@
             if (talkablePlacementsConfig.site_url) {
               var site_url = document.createElement('a');
 
-              site_url.href =
-                (matcher.host_pattern
-                  ? 'https://' + matcher.host_pattern
-                  : talkablePlacementsConfig.site_url) + matcher.path_pattern;
+              site_url.href = talkablePlacementsConfig.site_url + matcher.path_pattern;
               path_pattern = site_url.pathname.replace(/(^\/*)/g, '/');
             }
 
@@ -621,9 +618,6 @@
             if (utils.matches(matchers[j])) {
               matched.push(placement.id);
               utils.placements.push(placement.id);
-              if (matchers[j] && matchers[j].site_country_id) {
-                utils.matchedCountries.push(matchers[j].site_country_id);
-              }
               break;
             }
           }
@@ -942,6 +936,10 @@
           if (data.page_title) {
             iframe.setAttribute('title', data.page_title);
           }
+
+          if (data.campaign_id) {
+            utils.loadTime.campaignLoaded(data.campaign_id);
+          }
         });
 
         return iframe;
@@ -1092,6 +1090,20 @@
         return false;
       },
 
+      encodeProperties: function (data, propertySuffixes) {
+        if (!window.btoa) {
+          return;
+        }
+
+        for (var key in data) {
+          for (var i = 0; i < propertySuffixes.length; i++) {
+            if (key.endsWith(propertySuffixes[i]) && data[key]) {
+              data[key] = btoa(data[key]);
+            }
+          }
+        }
+      },
+
       formIframe: function (options, url_path, url_parameters) {
         var utm_tags = [
           'utm_campaign',
@@ -1112,13 +1124,10 @@
 
         url_path = url_path + '.' + utils.getIframeCreationExtension();
 
-        if (url_parameters.o && window.btoa) {
-          if (url_parameters.o.email) {
-            url_parameters.o.email = btoa(url_parameters.o.email);
-          }
-          if (url_parameters.o.phone_number) {
-            url_parameters.o.phone_number = btoa(url_parameters.o.phone_number);
-          }
+        utils.encodeProperties(url_parameters, ['email', 'phone_number']);
+
+        if (url_parameters.o) {
+          utils.encodeProperties(url_parameters.o, ['email', 'phone_number']);
         }
 
         url_parameters.cvuuid = utils.ensureUUID();
@@ -1338,12 +1347,8 @@
 
           return cookie;
         }
-        cookie = this.getCookie(UUID_SESSION_KEY);
-        if (cookie) {
-          this.isPermanentCookie = false;
 
-          return cookie;
-        }
+        return this.getCookie(UUID_SESSION_KEY);
       },
 
       setCookie: function (name, value) {
@@ -1369,12 +1374,12 @@
       },
 
       ensureUUID: function () {
-        var uuid = utils.location_parameter(UUID_KEY);
+        var uuid =
+          utils.location_parameter(UUID_KEY) ||
+          utils.location_parameter(UUID_DEPRECATED_KEY) ||
+          utils.location_parameter(UUID_SESSION_KEY);
 
-        // Check UUID from URL
-        if (!UUID_REGEXP.test(uuid)) {
-          uuid = this.getAllCookies() || this.generateUUID();
-        }
+        uuid = uuid || this.getAllCookies() || this.generateUUID();
 
         if (utils.location_parameter('accepted_cookies')) {
           this.isPermanentCookie = true;
@@ -1427,10 +1432,106 @@
           config.launch_campaigns && config.site_id && typeof _talkableq !== 'undefined'
         );
       },
+
+      isIntegrationLibraryHostname: function (value) {
+        return (
+          /^curebit(-(development|staging|test))?\.s3\.amazonaws\.com$/.test(value) ||
+          /^(d2jjzw81hqbuqv|d3pfcpkel4p4mo|di6re4dxelnn2)\.cloudfront\.net$/.test(value)
+        );
+      },
+
+      parseHostname: function (url) {
+        var parser = document.createElement('a');
+
+        parser.href = url;
+
+        return parser.hostname;
+      },
+
+      loadTime: {
+        enabled:
+          window.talkablePlacementsConfig &&
+          talkablePlacementsConfig.tracks_campaign_load_timings,
+        sentToServer: false,
+        timings: {
+          l: null, // library
+          s: null, // site
+          c: null, // campaign
+          cid: null, // campaign ID
+        },
+
+        sendToServer: function () {
+          if (
+            this.enabled &&
+            !this.sentToServer &&
+            this.timings.l &&
+            this.timings.s &&
+            this.timings.c &&
+            this.timings.cid
+          ) {
+            this.sentToServer = true;
+
+            utils.ajax({
+              method: 'POST',
+              url: utils.createUrl('/timings'),
+              data: this.timings,
+            });
+          }
+        },
+
+        campaignLoaded: function (campaignId) {
+          if (!this.timings.c && !this.timings.cid) {
+            this.timings.c = Math.ceil(performance.now());
+            this.timings.cid = campaignId;
+
+            this.sendToServer();
+          }
+        },
+
+        waitForScriptLoad: function () {
+          setTimeout(function () {
+            var navigationStart = performance.getEntriesByType('navigation')[0].startTime;
+            var scriptResource = performance
+              .getEntriesByType('resource')
+              .find(function (resource) {
+                return (
+                  resource.initiatorType === 'script' &&
+                  utils.isIntegrationLibraryHostname(utils.parseHostname(resource.name))
+                );
+              });
+
+            if (
+              scriptResource &&
+              !utils.loadTime.timings.l &&
+              !utils.loadTime.timings.s
+            ) {
+              utils.loadTime.timings.l = Math.ceil(
+                scriptResource.responseEnd - navigationStart
+              );
+              utils.loadTime.timings.s = Math.ceil(
+                performance.getEntriesByType('navigation')[0].duration
+              );
+
+              utils.loadTime.sendToServer();
+            }
+          }, 0);
+        },
+
+        startWaitingForScriptLoad: function () {
+          if (!this.enabled) {
+            return;
+          } else if (document.readyState === 'complete') {
+            this.waitForScriptLoad();
+          } else {
+            window.addEventListener('load', this.waitForScriptLoad);
+          }
+        },
+      },
     };
 
     utils.doubleIntegrationCheck();
     utils.startListening();
+    utils.loadTime.startWaitingForScriptLoad();
 
     methods = {
       init: function (options) {
@@ -1510,17 +1611,22 @@
         var matched_placement_ids =
           registerData.matched_placement_ids ||
           utils.match_placements('affiliate_member');
+        var origin_params = utils.withoutProperties(
+          ['currency', 'language'],
+          utils.merge(customerData, affiliate_member)
+        );
         var parameters = {
-          o: utils.merge(customerData, affiliate_member),
+          o: origin_params,
           campaign_tags:
             utils.location_parameter('campaign_tags') || registerData.campaign_tags,
           affiliate_campaign_id: utils.location_parameter('tkbl_campaign_id'),
           custom_properties: registerData.custom_properties,
+          currency: registerData.currency || customerData.currency,
+          language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
           tkbl_expand:
             utils.location_parameter('tkbl_expand') || registerData.expand_trigger_widget,
           matched_placement_ids: matched_placement_ids,
-          matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
           vi: verify_integration,
@@ -1584,14 +1690,20 @@
         utils.cleanupRegisterData(registerData);
         utils.merge_custom_properties(custom_properties);
 
+        var origin_params = utils.withoutProperties(
+          ['currency', 'language'],
+          utils.merge(customerData, purchase)
+        );
+
         var parameters = {
-          o: utils.merge(customerData, purchase),
+          o: origin_params,
           campaign_tags: campaign_tags,
           affiliate_campaign_id: utils.location_parameter('tkbl_campaign_id'),
           custom_properties: custom_properties,
+          currency: registerData.currency || customerData.currency,
+          language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
           matched_placement_ids: utils.match_placements('purchase'),
-          matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
           vi: verify_integration,
@@ -1655,11 +1767,18 @@
 
         utils.merge_custom_properties(custom_properties);
 
+        var origin_params = utils.withoutProperties(
+          ['currency', 'language'],
+          utils.merge(customerData, event)
+        );
+
         var parameters = {
-          o: utils.merge(customerData, event),
+          o: origin_params,
           campaign_tags: campaign_tags,
           affiliate_campaign_id: utils.location_parameter('tkbl_campaign_id'),
           custom_properties: custom_properties,
+          currency: registerData.currency || customerData.currency,
+          language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
           matched_placement_ids: utils.match_placements(event.event_category),
           ts: talkablePlacementsConfig.timestamp,
@@ -1755,6 +1874,11 @@
         utils.formIframe(options, matchData.path, urlParameters);
       },
 
+      accepted_cookies: function () {
+        utils.isPermanentCookie = true;
+        utils.ensureUUID();
+      },
+
       join_loyalty: function (data) {
         utils.ensureInitialized();
 
@@ -1768,7 +1892,7 @@
           return;
         }
 
-        var url = utils.createUrl(matchData.path, {
+        var urlParameters = {
           campaign_id:
             utils.location_parameter('tkbl_campaign_id') || registerData.campaign_id,
           custom_properties: customerData.custom_properties,
@@ -1780,7 +1904,11 @@
             registerData.matched_placement_ids || matchData.matchedPlacementIds,
           optin: true,
           phone_number: registerData.phone_number || customerData.phone_number,
-        });
+        };
+
+        utils.encodeProperties(urlParameters, ['email', 'phone_number']);
+
+        var url = utils.createUrl(matchData.path, urlParameters);
 
         utils.ajax({
           url: url,
@@ -1799,6 +1927,11 @@
         }
 
         var email = registerData.email || customerData.email;
+
+        if (window.btoa && email) {
+          email = btoa(email);
+        }
+
         var customProperties =
           registerData.custom_properties || customerData.custom_properties || {};
 
@@ -1843,9 +1976,11 @@
         var urlParameters = {
           campaign_id:
             utils.location_parameter('tkbl_campaign_id') || registerData.campaign_id,
+          campaign_tags:
+            utils.location_parameter('campaign_tags') || registerData.campaign_tags,
           friend_email: registerData.email || customerData.email,
+          language: registerData.language || customerData.language,
           matched_placement_ids: matchedPlacementIds,
-          matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           tkbl_expand:
             utils.location_parameter('tkbl_expand') || registerData.expand_trigger_widget,
         };
@@ -1917,7 +2052,22 @@
         talkable._launch_campaigns_retry = setInterval(function () {
           if (utils.launchCampaignsCriteria()) {
             clearInterval(talkable._launch_campaigns_retry);
-            utils.launchCampaigns();
+            if (talkablePlacementsConfig.spa_placements) {
+              try {
+                var previousHref = document.location.href;
+
+                setInterval(function () {
+                  if (previousHref !== document.location.href) {
+                    previousHref = document.location.href;
+                    utils.launchCampaigns();
+                  }
+                }, config.launch_campaigns_spa_delay);
+              } catch (ex) {
+                utils.log(ex);
+              }
+            } else {
+              utils.launchCampaigns();
+            }
           }
         }, config.launch_campaigns_retry_delay);
 
