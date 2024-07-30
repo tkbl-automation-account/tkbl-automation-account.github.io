@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!--    for custom js lib-->
+<!--    <script async-->
+<!--            src="//talkable-labs.herokuapp.com/pl.js?lib=https://curebit-staging.s3.amazonaws.com/integration/clients/testmax-custom-29jun2023.min.js"-->
+<!--            type="text/javascript"></script>-->
+<!--    <script src="./testMax-custom-29jun2023/integration.js"></script>-->
+
+    <!--    for default js lib-->
+        <script async src="//di6re4dxelnn2.cloudfront.net/integration/clients/testmax-custom-13jul2023.min.js"
+                type="text/javascript"></script>
+
+<!--    <script>-->
+<!--    window._talkableq = window._talkableq || [];-->
+<!--        _talkableq.push(["talkable_loaded", function() {-->
+<!--    talkable.before("register_affiliate", function(data) {-->
+<!--    data.custom_properties = {-->
+<!--      test_key_fw: 'test-value-fw'-->
+<!--    }-->
+<!--    return data;-->
+<!--  })-->
+<!--}]);-->
+<!--        window._talkableq = window._talkableq || [];-->
+<!--        _talkableq.push(['init', { site_id: "testmax-custom-29jun2023", server: 'https://void.talkable.com'}]);-->
+
+<!--    </script>-->
+
+    <!--    <script>-->
+    <!--        window._talkableq = window._talkableq || [];-->
+    <!--        _talkableq.push(['init', { site_id: "testmax-custom-29jun2023", server: 'https://void.talkable.com'}]);-->
+
+    <!--        window._talkableq.push(['authenticate_customer', {-->
+    <!--            email: '', // Optional, pass when available. Example: 'customer@example.com'-->
+    <!--            first_name: '', // Optional, pass when available. Example: 'John'-->
+    <!--            last_name: '', // Optional, pass when available. Example: 'Smith'-->
+    <!--            traffic_source: '' // The source of the traffic driven to the campaign. Example: 'facebook'-->
+    <!--        }]);-->
+    <!--    </script>-->
+
+
+</head>
+<body>
+
+<a href="index.html">Launch campaigns = true</a><br/>
+<a href="plain_launch_campaigns_false.html">Launch campaigns = false</a><br/>
+<a href="plain_without_script.html">Page without Tkbl script</a><br/>
+
+<p>Test integration</p>
+
+<div id="talkable-offer"></div>
+
+</body>
+</html>

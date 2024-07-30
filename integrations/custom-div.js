@@ -1,6 +1,6 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/blob/69d668734f30098b1746ae68cd2ea0ebc521e959/src/integration.js
-//updated on 19 Jul 2024, 11:46
+//updated on 30 Jul 2024, 15:34 (the latest multi-geo changes included)
 
 /**
  * @prettier
@@ -50,6 +50,7 @@
       lastLoadedIframeName: [],
       gleamRewardCallback: undefined,
       placements: [],
+      matchedCountries: [],
 
       define: function (name, callback) {
         if (methods[name]) {
@@ -457,7 +458,10 @@
             if (talkablePlacementsConfig.site_url) {
               var site_url = document.createElement('a');
 
-              site_url.href = talkablePlacementsConfig.site_url + matcher.path_pattern;
+              site_url.href =
+                (matcher.host_pattern
+                  ? 'https://' + matcher.host_pattern
+                  : talkablePlacementsConfig.site_url) + matcher.path_pattern;
               path_pattern = site_url.pathname.replace(/(^\/*)/g, '/');
             }
 
@@ -587,6 +591,9 @@
             if (utils.matches(matchers[j])) {
               matched.push(placement.id);
               utils.placements.push(placement.id);
+              if (matchers[j] && matchers[j].site_country_id) {
+                utils.matchedCountries.push(matchers[j].site_country_id);
+              }
               break;
             }
           }
@@ -1584,6 +1591,7 @@
           tkbl_expand:
             utils.location_parameter('tkbl_expand') || registerData.expand_trigger_widget,
           matched_placement_ids: matchedPlacementIds,
+          matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
           vi: verify_integration,
@@ -1658,6 +1666,7 @@
           custom_properties: custom_properties,
           integration_platform: config.integration_platform,
           matched_placement_ids: matchedPlacementIds,
+          matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
           vi: verify_integration,
@@ -1930,6 +1939,7 @@
             utils.location_parameter('campaign_tags') || registerData.campaign_tags,
           friend_email: registerData.email || customerData.email,
           matched_placement_ids: matchedPlacementIds,
+          matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           tkbl_expand:
             utils.location_parameter('tkbl_expand') || registerData.expand_trigger_widget,
         };
