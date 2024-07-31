@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loyalty</title>
+    <script src="page_builder.js"></script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw=="
+          crossorigin="anonymous">
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A=="
+            crossorigin="anonymous"></script>
+    <script src="site_variables.js"></script>
+    <script src="init.js"></script>
+    <title>Loyalty</title>
+
+</head>
+<body onload="build_page()">
+<pre id="site-values"></pre>
+<div class="container">
+    <div class="masthead">
+        <nav>
+            <ul id="nav_buttons" class="nav nav-justified" onload="build_nav_buttons()"></ul>
+        </nav>
+        <div>
+            <ul id="integration_buttons" onload="build_integration_buttons()"></ul>
+        </div>
+    </div>
+    <div id="talkable-offer"></div>
+    <div id="talkable-loyalty"></div>
+</div>
+</body>
+</html>
