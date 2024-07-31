@@ -1,14 +1,14 @@
 const queryParams = getUrlParams(window.location.search);
 
 //values for case when param is not provided in URL
-var default_site = "testmax-multigeo-15jun2024";
+var default_site = "not-provided";
 var default_server = "void";
 
 //integration values:
 var site = (queryParams.site || default_site).toLowerCase();
 var server_name = queryParams.server || default_server;
 var launch_campaigns = queryParams.launch_campaigns;
-var custom_integration_link = queryParams.integration_link || '//tkbl-automation-account.github.io/integrations/integrations.js';
+var custom_integration_link = queryParams.integration_link || queryParams.js_lib;
 
 
 function getIntegrationSrc() {
@@ -75,11 +75,12 @@ function build_site_admin_url() {
 var site_data = function () {
     var data = {
         site_slug: site,
-        server: getServer(server_name),
+        server: getServer(queryParams.server),
         server_name: queryParams.server,
         tkbl_integration_scr: getIntegrationSrc(),
         launch_campaigns: launch_campaigns_flag(),
-        site_admin_url: build_site_admin_url()
+        site_admin_url: build_site_admin_url(),
+        custom_js_lib: queryParams.js_lib != null || queryParams.integration_link != null
     };
     return data;
 }

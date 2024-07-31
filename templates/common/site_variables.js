@@ -1,18 +1,18 @@
 const queryParams = getUrlParams(window.location.search);
 
-var site = queryParams.site.toLowerCase();
-var server_name = queryParams.server;
+//values for case when param is not provided in URL
+var default_site = "site-not-provided";
+var default_server = "server-not-provided";
+
+//integration values:
+var site = (queryParams.site || default_site).toLowerCase();
+var server_name = queryParams.server || default_server;
 var launch_campaigns = queryParams.launch_campaigns;
 var custom_integration_link = queryParams.integration_link || queryParams.js_lib;
 
+
 function getIntegrationSrc() {
-    var src;
-    if (custom_integration_link !== undefined) {
-        src = custom_integration_link;
-    }
-    else{
-        src = getPerClientIntegrationSrc(site);
-    }
+    var src = custom_integration_link || getPerClientIntegrationSrc(site);
     console.log("JS lib loaded from: " + src);
     return src;
 }

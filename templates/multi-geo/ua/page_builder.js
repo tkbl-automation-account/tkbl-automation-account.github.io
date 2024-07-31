@@ -24,10 +24,16 @@ function build_page(){
  }
 
  function build_nav_buttons() {
-     const query_params = '?site=' + site_data().site_slug + '&server=' + site_data().server_name + launch_campaigns_query_param();
+     let query_params = '?site=' + site_data().site_slug + '&server=' + site_data().server_name + launch_campaigns_query_param();
+
+     if(site_data().custom_js_lib) {
+        query_params = query_params + "&js_lib=" + site_data().tkbl_integration_scr;
+     }
+
      addButton("Index", 'index.html' + query_params);
      addButton("SA", 'sa.html' + query_params);
      addButton("EC", 'ec.html' + query_params);
+     addButton("Claim by name", 'cn_page.html' + query_params);
      addButton("Loyalty", 'loyalty.html' + query_params);
      addButton("Signup", 'signup.html' + query_params);
      addButton("Post Purchase", 'pp.html' + query_params);

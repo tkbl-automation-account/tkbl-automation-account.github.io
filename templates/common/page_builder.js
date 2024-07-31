@@ -30,7 +30,6 @@ function build_page(){
         query_params = query_params + "&js_lib=" + site_data().tkbl_integration_scr;
      }
 
-     console.log('update nav 5');
      addButton("Index", 'index.html' + query_params);
      addButton("SA", 'sa.html' + query_params);
      addButton("EC", 'ec.html' + query_params);
