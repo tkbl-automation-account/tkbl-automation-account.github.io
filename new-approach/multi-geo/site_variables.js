@@ -3,7 +3,7 @@ const queryParams = getUrlParams(window.location.search);
 var site = queryParams.site.toLowerCase();
 var server_name = queryParams.server;
 var launch_campaigns = queryParams.launch_campaigns;
-var custom_integration_link = queryParams.integration_link;
+var custom_integration_link = queryParams.integration_link || queryParams.js_lib;
 
 function getIntegrationSrc() {
     var src;
