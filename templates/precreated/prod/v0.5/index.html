@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+  </head>
+  <body>
+    <button id="refer-to-friend">Invite a Friend and Get $50 When They Book</button>
+    
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto non minus doloremque consequatur veniam eos voluptatibus voluptates exercitationem officia, harum, dolorum, cumque, eum facere sit incidunt dicta voluptas! Cupiditate, unde ea quod repellendus iste nulla sed doloremque at possimus eligendi! </p>
+    <pre> Site slug: </pre>
+    <pre id="site.slug">integration-site-version-0-5</pre>
+    <!-- Begin Talkable integration code -->
+<script type="text/javascript">// <![CDATA[
+  try {
+    curebit_email = adoremeCustomerInfo.customer.email;
+  } catch(err) {
+    curebit_email = '';
+  }
+  try {
+    curebit_firstName = adoremeCustomerInfo.customer.firstName;
+  } catch(err) {
+    curebit_firstName = '';
+  }
+  try {
+    curebit_lastName = adoremeCustomerInfo.customer.lastName;
+  } catch(err) {
+    curebit_lastName = '';
+  }
+  try {
+    curebit_id = adoremeCustomerInfo.customer.id;
+  } catch(err) {
+    curebit_id = '';
+  }
+  var _curebitq = _curebitq || [];
+  _curebitq.push(['init', {
+  site_id: 'integration-site-version-0-5', // REQUIRED - Curebit Site ID
+  server: 'https://www.curebit.com' // OPTIONAL - Use your own domain (enterprise only)
+  }]);
+  _curebitq.push(['new_affiliate', {
+  iframe: { // REQUIRED - html attributes for iframe tag to fit page design
+  width: "100%", // REQUIRED - width of the iframe
+  height: 943, // REQUIRED - height of the iframe
+  id: "new_curebit_affiliate_member", // OPTIONAL - any other HTML attribute
+  frameborder: 0 // OPTIONAL - removes border from IE
+  },
+  affiliate_member: { // OPTIONAL - curebit will ask person to signup
+  // in case when his email is not given by merchant
+  //email: curebit_email, // OPTIONAL - customer email
+  first_name: curebit_firstName, // OPTIONAL - customer first name
+  last_name: curebit_lastName, // OPTIONAL - customer last name
+  customer_id: curebit_id // OPTIONAL - customer ID from your site
+  },
+  campaign_tags: ['integration'] // OPTIONAL - campaign tags for offer targeting
+  }])
+//]] >
+// ]]></script>
+<script type="text/javascript" src="curebit-0.5.js"></script>
+    <!-- End Talkable integration code -->
+  </body>
+</html>
