@@ -8,7 +8,7 @@ var default_server = "void";
 var site = (queryParams.site || default_site).toLowerCase();
 var server_name = queryParams.server || default_server;
 var launch_campaigns = queryParams.launch_campaigns;
-var custom_integration_link = queryParams.integration_link || '//tkbl-automation-account.github.io/integrations/integrations.js';
+var custom_integration_link = queryParams.integration_link;
 
 
 function getIntegrationSrc() {
