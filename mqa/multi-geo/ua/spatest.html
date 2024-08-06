@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>index</title>
+    <title></title>
+
     <script src="//tkbl-automation-account.github.io/templates/common/scripts/page_builder.js"></script>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw=="
           crossorigin="anonymous">
-    <link rel="stylesheet" href="//tkbl-automation-account.github.io/templates/common/styles/styles.css">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
             integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A=="
             crossorigin="anonymous"></script>
     <script src="//tkbl-automation-account.github.io/templates/common/scripts/site_variables.js"></script>
     <script src="//tkbl-automation-account.github.io/templates/common/scripts/init.js"></script>
-
+    <title>Spa Test</title>
 
     <!--Start Talkable script-->
     <script>
-      tkbl_init();
+        tkbl_init();
+        authenticate_customer();
+        register_affiliate();
     </script>
-    <!--    <script>-->
-    <!--      tkbl_init();-->
-    <!--      authenticate_customer();-->
-    <!--      show_email_capture_offer();-->
-    <!--    </script>-->
     <!--End Talkable script-->
-
 
 </head>
 <body onload="build_page()">
@@ -38,9 +34,38 @@
             <ul id="nav_buttons" class="nav nav-justified" onload="build_nav_buttons()"></ul>
         </nav>
     </div>
+
+
+
+    <!-- Add a button -->
+    <br/>
+    <button id="first-button">First button</button>
+
+    <!-- Add a script to handle button click -->
+    <script>
+        document.querySelector('#first-button').addEventListener('click', function() {
+            document.querySelector('#talkable-offer').remove();
+            const newTalkableContainer = document.createElement('div');
+            newTalkableContainer.id = 'talkable-offer';
+            document.body.appendChild(newTalkableContainer);
+        });
+    </script>
+
+    <br/>
+    <button id="second-button">Second button</button>
+    <br/>
+
+    <!-- Add a script to handle button click -->
+    <script>
+        document.querySelector('#second-button').addEventListener('click', function() {
+            const url = new URL(location);
+            url.searchParams.set("foo", "bar");
+            history.pushState({}, "", url);
+        });
+    </script>
+
     <div id="talkable-offer"></div>
-    <div id="talkable-loyalty"></div>
 
-
+</div>
 </body>
 </html>

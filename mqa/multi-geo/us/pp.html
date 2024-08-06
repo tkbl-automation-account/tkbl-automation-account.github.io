@@ -5,13 +5,13 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
     <title>pp</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="//tkbl-automation-account.github.io/templates/common/styles/styles.css">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
-    <script src="page_builder.js"></script>
-    <script src="site_variables.js"></script>
-    <script src="init.js"></script>
+    <script src="//tkbl-automation-account.github.io/templates/common/scripts/page_builder.js"></script>
+    <script src="//tkbl-automation-account.github.io/templates/common/scripts/site_variables.js"></script>
+    <script src="//tkbl-automation-account.github.io/templates/common/scripts/init.js"></script>
     <!--Start Talkable script-->
     <script>
       tkbl_init();
@@ -39,6 +39,7 @@
         Shipping Address: <input type="text" id="shipping-address" value="2059 Default Street, Mandeville, Louisiana, 70448, United States"><br>
         ZIP Code: <input type="text" id="zip-code" value="12345"><br>
         Subtotal: <input type="text" id="subtotal" value="100"><br>
+        Currency ISO code: <input type="text" id="currency" value="USD"><br>
         
         <br>
         <button onclick="changeDataAndMakePurahcse()">Purchase with new data</button><br>
@@ -68,6 +69,7 @@
                 order_number: Math.random().toString(), // Order number, should be unique
                 subtotal: document.getElementById("subtotal").value, // Purchase Subtotal, pre-tax, pre-shipping
                 coupon_code: document.getElementById("couponCode").value, //'FR_NEW_5_OFF',
+                currency_iso_code: document.getElementById("currency").value,
                 //start cahnges
 //                 shipping_zip: '70448',  // Optional - used for fraud protection by address. Example: '02222'
                 shipping_zip: document.getElementById("zip-code").value,
