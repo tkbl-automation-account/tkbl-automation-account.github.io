@@ -1,6 +1,6 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/blob/69d668734f30098b1746ae68cd2ea0ebc521e959/src/integration.js
-//updated on 30 Jul 2024, 15:34 (the latest multi-geo changes included)
+//updated on 9 Sept 2024, 12:32
 
 /**
  * @prettier
@@ -156,6 +156,16 @@
         }
 
         return dst;
+      },
+
+      withoutProperties: function (properties, object) {
+        var result = utils.clone(object);
+
+        for (var i = 0; i < properties.length; i++) {
+          delete result[properties[i]];
+        }
+
+        return result;
       },
 
       clone: function (object) {
@@ -589,8 +599,8 @@
 
           for (var j = 0; j < matchers.length; j++) {
             if (utils.matches(matchers[j])) {
-              matched.push(placement.id);
-              utils.placements.push(placement.id);
+              matched.push(placement);
+              utils.placements.push(placement);
               if (matchers[j] && matchers[j].site_country_id) {
                 utils.matchedCountries.push(matchers[j].site_country_id);
               }
@@ -599,7 +609,27 @@
           }
         }
 
-        return matched.length ? matched : EMPTY_PLACEMENTS;
+        if (matched.length > 1) {
+          var firstContainerName = matched[0].container_name;
+
+          var allSameContainer = matched.every(function (placement) {
+            return placement.container_name === firstContainerName;
+          });
+
+          if (allSameContainer) {
+            matched.sort(function (a, b) {
+              return a.priority - b.priority;
+            });
+
+            matched.splice(1);
+          }
+        }
+
+        return matched.length
+          ? matched.map(function (placement) {
+              return placement.id;
+            })
+          : EMPTY_PLACEMENTS;
       },
 
       matchLoyaltyPlacements: function () {
@@ -717,17 +747,16 @@
       addIframeElement: function (url, options) {
         utils.log('addIframeElement: ' + url);
 
-        var uniqueName = utils.generateRandomIframeName();
-
-        (options = utils.clone(options || {})).frameBorder = '0';
+        options = utils.clone(options || {});
+        options.frameBorder = '0';
         options.allowTransparency = true;
         options.src = url;
         options.allow = 'camera *;microphone *;web-share';
-        options.name = uniqueName; // Set the unique name for the iframe
 
         var container = options.container || utils.generateRandomIframeName();
 
         delete options.container;
+        utils.addRandomIframeName(options);
 
         var iframe = null;
         var styleTag = null;
@@ -736,7 +765,6 @@
         iframe.style.display = 'none';
         iframe.style.opacity = '0';
         this.setAttributes(iframe, options);
-
         this.insertIframeIntoContainer(iframe, container);
 
         utils.subscribe('responsive_iframe_height', iframe.name, function (data, iframe) {
@@ -751,68 +779,82 @@
           ) {
             return;
           }
-
-          if (data && data.offer_state && data.offer_state_attribute) {
-            if (data.width) {
-              iframe.style.width = data.width;
-            }
-            if (data.height) {
-              iframe.style.height = data.height;
-            }
-            if (data.integration_css) {
-              utils.setIntegrationCss(data.integration_css);
-            }
-
-            var currentAttribute =
-              document.body.getAttribute(data.offer_state_attribute) || '';
-
-            if (
-              data.action === 'add' &&
-              currentAttribute.indexOf(data.offer_state) === -1
-            ) {
-              document.body.setAttribute(
-                data.offer_state_attribute,
-                (data.offer_state + ' ' + currentAttribute).trim()
-              );
-            } else if (data.action === 'remove') {
-              document.body.setAttribute(
-                data.offer_state_attribute,
-                currentAttribute.replace(data.offer_state, '').trim()
-              );
-            } else if (data.action === 'set') {
-              document.body.setAttribute(data.offer_state_attribute, data.offer_state);
-            }
+          if (!data) {
+            return;
           }
-        });
+          if (!data.offer_state) {
+            return;
+          }
+          if (!data.offer_state_attribute) {
+            return;
+          }
+          if (data.width) {
+            iframe.style.width = data.width;
+          }
+          if (data.height) {
+            iframe.style.height = data.height;
+          }
 
-        utils.subscribe('change_loyalty_member_state', iframe.name, function (data) {
-          if (data.action === 'remove') {
-            utils.deleteCookie(LOYALTY_OPTIN_KEY);
+          if (data.integration_css) {
+            utils.setIntegrationCss(data.integration_css);
+          }
+          currentAttribute = document.body.getAttribute(data.offer_state_attribute) || '';
+          if (
+            data.action === 'add' &&
+            currentAttribute.indexOf(data.offer_state) === -1
+          ) {
+            document.body.setAttribute(
+              data.offer_state_attribute,
+              (data.offer_state + ' ' + currentAttribute).trim()
+            );
+          } else if (data.action === 'remove') {
+            document.body.setAttribute(
+              data.offer_state_attribute,
+              currentAttribute.replace(data.offer_state, '').trim()
+            );
           } else if (data.action === 'set') {
-            utils.setCookie(LOYALTY_OPTIN_KEY, true);
+            document.body.setAttribute(data.offer_state_attribute, data.offer_state);
           }
+
+          setTimeout(function () {
+            if (document.all && !window.atob) {
+              // need to update DOM to apply styles in IE <= 9
+              // eslint-disable-next-line no-self-assign
+              document.body.className = document.body.className;
+            }
+          }, 0);
         });
 
-        utils.subscribe('cookies_consent', iframe.name, function () {
+        utils.subscribe(
+          'change_loyalty_member_state',
+          iframe.name,
+          function (data, iframe) {
+            if (data.action === 'remove') {
+              utils.deleteCookie(LOYALTY_OPTIN_KEY);
+            } else if (data.action === 'set') {
+              utils.setCookie(LOYALTY_OPTIN_KEY, true);
+            }
+          }
+        );
+
+        utils.subscribe('cookies_consent', iframe.name, function (data, iframe) {
           utils.setCookie(UUID_KEY, utils.getAllCookies());
         });
 
-        utils.subscribe('set_location', iframe.name, function (data) {
-          if (data) {
-            if (utils.isInIframe()) {
-              var msg_data = {
-                type: 'set_location',
-                iframe_name: window.name,
-                data: data,
-              };
+        utils.subscribe('set_location', iframe.name, function (data, iframe) {
+          if (!data) {
+            return;
+          }
+          if (utils.isInIframe()) {
+            var msg_data = {
+              type: 'set_location',
+              iframe_name: window.name,
+              data: data,
+            };
 
-              utils.postmessage.send(msg_data, '*', window.parent);
-            } else if (
-              data.href &&
-              data.href.toLowerCase().indexOf('javascript:') === -1
-            ) {
-              window.location.href = data.href;
-            }
+            utils.postmessage.send(msg_data, '*', window.parent);
+          } else if (data.href && data.href.toLowerCase().indexOf('javascript:') === -1) {
+            window.location.href = data.href;
           }
         });
 
@@ -828,6 +870,8 @@
         });
 
         utils.subscribe('offer_close', iframe.name, function (data, iframe) {
+          // reset iframe load state
+
           var index = utils.lastLoadedIframeName.indexOf(iframe.name);
 
           if (index !== -1) {
@@ -835,11 +879,11 @@
           }
 
           iframe.style.display = 'none';
-          if (styleTag) {
-            styleTag.remove();
-          }
+          styleTag && styleTag.remove();
           styleTag = null;
 
+          // Otherwise it causes a never-ending tab window spinner in Chrome
+          // Yes, the delay should be that big, otherwise it won’t fix the issue
           setTimeout(function () {
             iframe.remove();
             iframe = null;
@@ -852,6 +896,7 @@
           if (data.perform_snapshot) {
             utils.scrapeDOM();
           }
+
           if (utils.gleamRewardCallback && data.gleam_reward) {
             try {
               utils.gleamRewardCallback(data.gleam_reward);
@@ -901,6 +946,7 @@
           if (data.page_title) {
             iframe.setAttribute('title', data.page_title);
           }
+
           if (data.campaign_id) {
             utils.loadTime.campaignLoaded(data.campaign_id);
           }
@@ -1054,6 +1100,24 @@
         return false;
       },
 
+      encodeProperties: function (data, propertySuffixes) {
+        if (!window.btoa) {
+          return data;
+        }
+
+        var encodedData = utils.clone(data || {});
+
+        for (var key in encodedData) {
+          for (var i = 0; i < propertySuffixes.length; i++) {
+            if (key.endsWith(propertySuffixes[i]) && encodedData[key]) {
+              encodedData[key] = btoa(encodedData[key]);
+            }
+          }
+        }
+
+        return encodedData;
+      },
+
       formIframe: function (options, url_path, url_parameters) {
         var utm_tags = [
           'utm_campaign',
@@ -1074,13 +1138,16 @@
 
         url_path = url_path + '.' + utils.getIframeCreationExtension();
 
-        if (url_parameters.o && window.btoa) {
-          if (url_parameters.o.email) {
-            url_parameters.o.email = btoa(url_parameters.o.email);
-          }
-          if (url_parameters.o.phone_number) {
-            url_parameters.o.phone_number = btoa(url_parameters.o.phone_number);
-          }
+        url_parameters = utils.encodeProperties(url_parameters, [
+          'email',
+          'phone_number',
+        ]);
+
+        if (url_parameters.o) {
+          url_parameters.o = utils.encodeProperties(url_parameters.o, [
+            'email',
+            'phone_number',
+          ]);
         }
 
         url_parameters.cvuuid = utils.ensureUUID();
@@ -1540,6 +1607,18 @@
 
         var affiliate_member =
           registerData.customer || registerData.affiliate_member || {};
+
+        var matchedPlacementIds =
+          registerData.matched_placement_ids ||
+          utils.match_placements('affiliate_member');
+
+        var containerName =
+          utils.matchContainerName(matchedPlacementIds) || 'talkable-offer';
+
+        var options = {
+          iframe: registerData.iframe || utils.defaultIframeOptions(containerName),
+          trigger_widget: registerData.trigger_widget || {},
+        };
         var verify_integration =
           utils.location_parameter('tkbl_verify_integration') ||
           config.verify_integration;
@@ -1570,23 +1649,18 @@
 
         delete customerData.accepted_cookies;
 
-        var matchedPlacementIds =
-          registerData.matched_placement_ids ||
-          utils.match_placements('affiliate_member');
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-offer';
-
-        var options = {
-          iframe: registerData.iframe || utils.defaultIframeOptions(containerName),
-          trigger_widget: registerData.trigger_widget || {},
-        };
-
+        var origin_params = utils.withoutProperties(
+          ['currency', 'language'],
+          utils.merge(customerData, affiliate_member)
+        );
         var parameters = {
-          o: utils.merge(customerData, affiliate_member),
+          o: origin_params,
           campaign_tags:
             utils.location_parameter('campaign_tags') || registerData.campaign_tags,
           affiliate_campaign_id: utils.location_parameter('tkbl_campaign_id'),
           custom_properties: registerData.custom_properties,
+          currency: registerData.currency || customerData.currency,
+          language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
           tkbl_expand:
             utils.location_parameter('tkbl_expand') || registerData.expand_trigger_widget,
@@ -1659,11 +1733,18 @@
         utils.cleanupRegisterData(registerData);
         utils.merge_custom_properties(custom_properties);
 
+        var origin_params = utils.withoutProperties(
+          ['currency', 'language'],
+          utils.merge(customerData, purchase)
+        );
+
         var parameters = {
-          o: utils.merge(customerData, purchase),
+          o: origin_params,
           campaign_tags: campaign_tags,
           affiliate_campaign_id: utils.location_parameter('tkbl_campaign_id'),
           custom_properties: custom_properties,
+          currency: registerData.currency || customerData.currency,
+          language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
           matched_placement_ids: matchedPlacementIds,
           matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
@@ -1705,12 +1786,8 @@
         utils.ensureInitialized();
         var registerData = utils.clone(data || {});
 
-        var matchedPlacementIds = utils.match_placements(event.event_category);
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-post-event';
-
         var options = {
-          iframe: registerData.iframe || utils.defaultIframeOptions(containerName),
+          iframe: registerData.iframe || {},
           trigger_widget: registerData.trigger_widget || {},
         };
         var campaign_tags =
@@ -1732,13 +1809,29 @@
 
         var event = utils.extractOriginData(registerData, 'event');
 
+        var matchedPlacementIds = utils.match_placements(event.event_category);
+        var containerName =
+          utils.matchContainerName(matchedPlacementIds) || 'talkable-post-event';
+
+        options.iframe =
+          Object.keys(options.iframe).length === 0
+            ? utils.defaultIframeOptions(containerName)
+            : options.iframe;
+
         utils.merge_custom_properties(custom_properties);
 
+        var origin_params = utils.withoutProperties(
+          ['currency', 'language'],
+          utils.merge(customerData, event)
+        );
+
         var parameters = {
-          o: utils.merge(customerData, event),
+          o: origin_params,
           campaign_tags: campaign_tags,
           affiliate_campaign_id: utils.location_parameter('tkbl_campaign_id'),
           custom_properties: custom_properties,
+          currency: registerData.currency || customerData.currency,
+          language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
           matched_placement_ids: matchedPlacementIds,
           ts: talkablePlacementsConfig.timestamp,
@@ -1755,16 +1848,6 @@
 
         var registerData = utils.clone(data || {});
 
-        utils.merge_custom_properties(registerData.custom_properties);
-
-        var accepted_cookies = customerData.accepted_cookies;
-
-        if (accepted_cookies) {
-          utils.isPermanentCookie = true;
-          utils.ensureUUID();
-        }
-
-        delete customerData.accepted_cookies;
         var matchedPlacementIds =
           registerData.matched_placement_ids ||
           utils.match_placements(
@@ -1779,6 +1862,17 @@
           iframe: utils.defaultIframeOptions(containerName),
           trigger_widget: {},
         };
+
+        utils.merge_custom_properties(registerData.custom_properties);
+
+        var accepted_cookies = customerData.accepted_cookies;
+
+        if (accepted_cookies) {
+          utils.isPermanentCookie = true;
+          utils.ensureUUID();
+        }
+
+        delete customerData.accepted_cookies;
 
         var parameters = {
           traffic_source: registerData.traffic_source,
@@ -1858,7 +1952,7 @@
           return;
         }
 
-        var url = utils.createUrl(matchData.path, {
+        var urlParameters = {
           campaign_id:
             utils.location_parameter('tkbl_campaign_id') || registerData.campaign_id,
           custom_properties: customerData.custom_properties,
@@ -1870,7 +1964,11 @@
             registerData.matched_placement_ids || matchData.matchedPlacementIds,
           optin: true,
           phone_number: registerData.phone_number || customerData.phone_number,
-        });
+        };
+
+        urlParameters = utils.encodeProperties(urlParameters, ['email', 'phone_number']);
+
+        var url = utils.createUrl(matchData.path, urlParameters);
 
         utils.ajax({
           url: url,
@@ -1889,6 +1987,11 @@
         }
 
         var email = registerData.email || customerData.email;
+
+        if (window.btoa && email) {
+          email = btoa(email);
+        }
+
         var customProperties =
           registerData.custom_properties || customerData.custom_properties || {};
 
@@ -1917,8 +2020,6 @@
         utils.ensureInitialized();
         var registerData = utils.clone(data || {});
 
-        utils.merge_custom_properties(registerData.custom_properties);
-
         var matchedPlacementIds =
           registerData.matched_placement_ids ||
           utils.match_placements('claim_by_name_popup');
@@ -1932,12 +2033,15 @@
           trigger_widget: registerData.trigger_widget || {},
         };
 
+        utils.merge_custom_properties(registerData.custom_properties);
+
         var urlParameters = {
           campaign_id:
             utils.location_parameter('tkbl_campaign_id') || registerData.campaign_id,
           campaign_tags:
             utils.location_parameter('campaign_tags') || registerData.campaign_tags,
           friend_email: registerData.email || customerData.email,
+          language: registerData.language || customerData.language,
           matched_placement_ids: matchedPlacementIds,
           matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           tkbl_expand:
@@ -2011,6 +2115,8 @@
         talkable._launch_campaigns_retry = setInterval(function () {
           if (utils.launchCampaignsCriteria()) {
             clearInterval(talkable._launch_campaigns_retry);
+            utils.launchCampaigns();
+
             if (talkablePlacementsConfig.spa_placements) {
               try {
                 var previousHref = document.location.href;
@@ -2024,8 +2130,6 @@
               } catch (ex) {
                 utils.log(ex);
               }
-            } else {
-              utils.launchCampaigns();
             }
           }
         }, config.launch_campaigns_retry_delay);
