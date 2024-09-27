@@ -1,6 +1,6 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/blob/69d668734f30098b1746ae68cd2ea0ebc521e959/src/integration.js
-//updated on 9 Sept 2024, 12:32
+//updated on 27 Sept 2024, 11:04
 
 /**
  * @prettier
@@ -621,7 +621,11 @@
               return a.priority - b.priority;
             });
 
-            matched.splice(1);
+            if (matched[0].appearance === 'gleam' && matched.length > 1) {
+              matched = [matched[0], matched[1]];
+            } else {
+              matched.splice(1);
+            }
           }
         }
 
