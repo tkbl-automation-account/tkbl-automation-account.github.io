@@ -1,6 +1,7 @@
 //PR-22076
 //https://raw.githubusercontent.com/talkable/talkable-integration/b481784f7d00e0e1a749b2d3a68dd369f14ec473/src/integration.js?token=GHSAT0AAAAAACSIPDKFSDI3RLDUPUECDUJMZYM5MYA
-//updated on 14 Oct 2024, 11:58
+//updated on 14 Oct 2024, 16:13
+
 
 /**
  * @prettier
@@ -626,16 +627,21 @@
             });
 
             if (matched[0].appearance === 'gleam' && matched.length > 1) {
-              matched = [[matched[0].id, matched[1].id]];
+              matched = [[matched[0], matched[1]]];
             } else {
-              matched = [matched[0].id];
+              matched = [matched[0]];
             }
-          } else {
-            matched.map(function (placement) {
-              return placement.id;
-            });
           }
         }
+        matched = matched.map(function (item) {
+          if (Array.isArray(item)) {
+            return item.map(function (innerItem) {
+              return innerItem.id;
+            });
+          } else {
+            return item.id;
+          }
+        });
 
         return matched.length ? matched : EMPTY_PLACEMENTS;
       },
