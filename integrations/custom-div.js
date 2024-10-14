@@ -1,6 +1,6 @@
 //PR-22076
-//https://github.com/talkable/talkable-integration/blob/69d668734f30098b1746ae68cd2ea0ebc521e959/src/integration.js
-//updated on 27 Sept 2024, 11:04
+//https://raw.githubusercontent.com/talkable/talkable-integration/b481784f7d00e0e1a749b2d3a68dd369f14ec473/src/integration.js?token=GHSAT0AAAAAACSIPDKFSDI3RLDUPUECDUJMZYM5MYA
+//updated on 14 Oct 2024, 11:58
 
 /**
  * @prettier
@@ -367,7 +367,11 @@
             (placements.length > 0 && placements !== EMPTY_PLACEMENTS)
           ) {
             placements.forEach(function (placement) {
-              window._talkableq.push([method, { matched_placement_ids: [placement] }]);
+              matched_placement_ids = Array.isArray(placement) ? placement : [placement];
+              window._talkableq.push([
+                method,
+                { matched_placement_ids: matched_placement_ids },
+              ]);
             });
           }
         }
@@ -622,18 +626,18 @@
             });
 
             if (matched[0].appearance === 'gleam' && matched.length > 1) {
-              matched = [matched[0], matched[1]];
+              matched = [[matched[0].id, matched[1].id]];
             } else {
-              matched.splice(1);
+              matched = [matched[0].id];
             }
+          } else {
+            matched.map(function (placement) {
+              return placement.id;
+            });
           }
         }
 
-        return matched.length
-          ? matched.map(function (placement) {
-              return placement.id;
-            })
-          : EMPTY_PLACEMENTS;
+        return matched.length ? matched : EMPTY_PLACEMENTS;
       },
 
       matchLoyaltyPlacements: function () {
@@ -1205,8 +1209,12 @@
       },
 
       matchContainerName: function (placementIds) {
-        for (var i = 0, placement; i < talkablePlacementsConfig.placements.length; i++) {
-          placement = talkablePlacementsConfig.placements[i];
+        placements = talkablePlacementsConfig.placements.concat(
+          talkablePlacementsConfig.conversion_placements,
+          talkablePlacementsConfig.loyalty_placements
+        );
+        for (var i = 0, placement; i < placements.length; i++) {
+          placement = placements[i];
 
           if (placementIds.indexOf(placement.id) !== -1 && placement.container_name) {
             return placement.container_name;
@@ -1860,7 +1868,7 @@
           );
 
         var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-email-capture-popup';
+          utils.matchContainerName(matchedPlacementIds) || 'talkable-email-capture-offer';
 
         var options = {
           iframe: utils.defaultIframeOptions(containerName),
