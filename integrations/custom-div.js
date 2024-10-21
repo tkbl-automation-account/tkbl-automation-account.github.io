@@ -1,6 +1,7 @@
 //PR-22076
 //https://raw.githubusercontent.com/talkable/talkable-integration/b481784f7d00e0e1a749b2d3a68dd369f14ec473/src/integration.js?token=GHSAT0AAAAAACSIPDKFSDI3RLDUPUECDUJMZYM5MYA
-//updated on 14 Oct 2024, 16:13
+//updated on 21 Oct 2024, 14:23
+
 
 
 /**
@@ -528,6 +529,27 @@
         }
       },
 
+      filterHighestPriority: function (placements) {
+        var result = [];
+        var containersMap = {};
+
+        placements.forEach(function (placement) {
+          if (!containersMap[placement.container_name]) {
+            containersMap[placement.container_name] = placement;
+          } else {
+            if (placement.prior < containersMap[placement.container_name].prior) {
+              containersMap[placement.container_name] = placement;
+            }
+          }
+        });
+
+        for (var key in containersMap) {
+          result.push(containersMap[key]);
+        }
+
+        return result;
+      },
+
       match_placements: function (event_category, placements) {
         if (typeof event_category === 'undefined') {
           event_category = 'affiliate_member';
@@ -614,34 +636,43 @@
           }
         }
 
-        if (matched.length > 1) {
-          var firstContainerName = matched[0].container_name;
-
-          var allSameContainer = matched.every(function (placement) {
-            return placement.container_name === firstContainerName;
+        if (matched.length === 1) {
+          matched = [matched[0].id];
+        } else if (matched.length > 1) {
+          var gleamPlacement = matched.filter(function (placement) {
+            return placement.appearance === 'gleam';
+          });
+          var otherPlacements = matched.filter(function (placement) {
+            return placement.appearance !== 'gleam';
           });
 
-          if (allSameContainer) {
-            matched.sort(function (a, b) {
-              return a.priority - b.priority;
-            });
+          otherPlacements = filterHighestPriority(otherPlacements);
+          var result = [];
 
-            if (matched[0].appearance === 'gleam' && matched.length > 1) {
-              matched = [[matched[0], matched[1]]];
-            } else {
-              matched = [matched[0]];
-            }
-          }
-        }
-        matched = matched.map(function (item) {
-          if (Array.isArray(item)) {
-            return item.map(function (innerItem) {
-              return innerItem.id;
+          if (gleamPlacement.length > 0) {
+            var gleam = gleamPlacement[0];
+
+            otherPlacements.forEach(function (otherPlacement) {
+              if (otherPlacement.container_name === gleam.container_name) {
+                result.push([gleam.id, otherPlacement.id]);
+              } else {
+                result.push([gleam.id, otherPlacement.id]);
+              }
             });
           } else {
-            return item.id;
+            result.push(
+              otherPlacements.map(function (placement) {
+                return placement.id;
+              })
+            );
           }
-        });
+
+          matched = result.map(function (group) {
+            return group.length === 1 ? group[0] : group;
+          });
+
+          matched = matched.length === 1 ? matched[0] : matched;
+        }
 
         return matched.length ? matched : EMPTY_PLACEMENTS;
       },
