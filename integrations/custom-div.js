@@ -1,8 +1,6 @@
 //PR-22076
 //https://raw.githubusercontent.com/talkable/talkable-integration/b481784f7d00e0e1a749b2d3a68dd369f14ec473/src/integration.js?token=GHSAT0AAAAAACSIPDKFSDI3RLDUPUECDUJMZYM5MYA
-//updated on 21 Oct 2024, 14:23
-
-
+//updated on 21 Oct 2024, 16:05
 
 /**
  * @prettier
@@ -529,7 +527,7 @@
         }
       },
 
-      filterHighestPriority: function (placements) {
+      filterPlacementsByHighestPriority: function (placements) {
         var result = [];
         var containersMap = {};
 
@@ -646,7 +644,7 @@
             return placement.appearance !== 'gleam';
           });
 
-          otherPlacements = filterHighestPriority(otherPlacements);
+          otherPlacements = utils.filterPlacementsByHighestPriority(otherPlacements);
           var result = [];
 
           if (gleamPlacement.length > 0) {
@@ -1246,10 +1244,15 @@
       },
 
       matchContainerName: function (placementIds) {
-        placements = talkablePlacementsConfig.placements.concat(
-          talkablePlacementsConfig.conversion_placements,
-          talkablePlacementsConfig.loyalty_placements
-        );
+        var placements = talkablePlacementsConfig.placements
+          .concat(
+            talkablePlacementsConfig.conversion_placements,
+            talkablePlacementsConfig.loyalty_placements
+          )
+          .filter(function (el) {
+            return el && el.id && el.container_name;
+          });
+
         for (var i = 0, placement; i < placements.length; i++) {
           placement = placements[i];
 
