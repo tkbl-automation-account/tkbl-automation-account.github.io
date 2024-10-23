@@ -1,6 +1,8 @@
 //PR-22076
+//https://github.com/talkable/talkable-integration/pull/743
 //https://raw.githubusercontent.com/talkable/talkable-integration/b481784f7d00e0e1a749b2d3a68dd369f14ec473/src/integration.js?token=GHSAT0AAAAAACSIPDKFSDI3RLDUPUECDUJMZYM5MYA
-//updated on 21 Oct 2024, 16:05
+//updated on 23 Oct 2024, 13:56
+
 
 /**
  * @prettier
@@ -332,6 +334,20 @@
         });
       },
 
+      triggerPlacements: function (placements, method, showCampaignCondition) {
+        if (showCampaignCondition) {
+          window._talkableq.push([method, {}]);
+        } else if (placements.length > 0 && placements !== EMPTY_PLACEMENTS) {
+          placements.forEach(function (placement) {
+            matched_placement_ids = Array.isArray(placement) ? placement : [placement];
+            window._talkableq.push([
+              method,
+              { matched_placement_ids: matched_placement_ids },
+            ]);
+          });
+        }
+      },
+
       launchCampaigns: function () {
         if (typeof talkablePlacementsConfig === 'undefined') {
           return;
@@ -361,26 +377,31 @@
           utils.location_parameter('tkbl_campaign_id') ||
           utils.location_parameter('campaign_tags');
 
-        function triggerPlacements(placements, method) {
-          if (
-            showCampaignCondition ||
-            (placements.length > 0 && placements !== EMPTY_PLACEMENTS)
-          ) {
-            placements.forEach(function (placement) {
-              matched_placement_ids = Array.isArray(placement) ? placement : [placement];
-              window._talkableq.push([
-                method,
-                { matched_placement_ids: matched_placement_ids },
-              ]);
-            });
-          }
-        }
-
-        triggerPlacements(referralPlacements, 'register_affiliate');
-        triggerPlacements(conversionPlacements, 'show_email_capture_offer');
-        triggerPlacements(loyaltyDashboardPlacements, 'show_loyalty');
-        triggerPlacements(loyaltyWidgetPlacements, 'show_loyalty');
-        triggerPlacements(nameSharingPlacements, 'show_claim_by_name');
+        utils.triggerPlacements(
+          referralPlacements,
+          'register_affiliate',
+          showCampaignCondition
+        );
+        utils.triggerPlacements(
+          conversionPlacements,
+          'show_email_capture_offer',
+          showCampaignCondition
+        );
+        utils.triggerPlacements(
+          loyaltyDashboardPlacements,
+          'show_loyalty',
+          showCampaignCondition
+        );
+        utils.triggerPlacements(
+          loyaltyWidgetPlacements,
+          'show_loyalty',
+          showCampaignCondition
+        );
+        utils.triggerPlacements(
+          nameSharingPlacements,
+          'show_claim_by_name',
+          showCampaignCondition
+        );
       },
 
       notifyIntegrationError: function (message, dev) {
@@ -648,28 +669,18 @@
           var result = [];
 
           if (gleamPlacement.length > 0) {
-            var gleam = gleamPlacement[0];
-
             otherPlacements.forEach(function (otherPlacement) {
-              if (otherPlacement.container_name === gleam.container_name) {
-                result.push([gleam.id, otherPlacement.id]);
-              } else {
-                result.push([gleam.id, otherPlacement.id]);
-              }
+              result.push([gleamPlacement[0].id, otherPlacement.id]);
             });
           } else {
-            result.push(
-              otherPlacements.map(function (placement) {
-                return placement.id;
-              })
-            );
+            otherPlacements.forEach(function (placement) {
+              result.push(placement.id);
+            });
           }
 
           matched = result.map(function (group) {
             return group.length === 1 ? group[0] : group;
           });
-
-          matched = matched.length === 1 ? matched[0] : matched;
         }
 
         return matched.length ? matched : EMPTY_PLACEMENTS;
