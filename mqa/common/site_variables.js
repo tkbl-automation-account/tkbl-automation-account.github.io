@@ -36,7 +36,7 @@ function getServer(server) {
             return "//bastion.talkable.com";
             break;
         case "prod":
-            return "//talkable.com";
+            return "//www.talkable.com";
 
         default:
             return server
