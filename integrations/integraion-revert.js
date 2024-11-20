@@ -1,6 +1,6 @@
 /**
  * @prettier
- TEST REVERT
+ TEST TEST
  */
 
 (function (window, document, JSON, Object) {
@@ -48,6 +48,7 @@
       gleamRewardCallback: undefined,
       placements: [],
       matchedCountries: [],
+      integratedCampaignsPlacementIds: new Set(),
 
       define: function (name, callback) {
         if (methods[name]) {
@@ -621,7 +622,28 @@
           }
         }
 
-        return matched.length ? matched : EMPTY_PLACEMENTS;
+        if (matched.length) {
+          for (var m = 0; m < matched.length; m++) {
+            var key = matched[m] + ":" + event_category;
+            utils.integratedCampaignsPlacementIds.add(key);
+          }
+
+          return matched;
+        }
+
+        for (var n = 0; n < placements.length; n++) {
+          var matchedPlacement = placements[n];
+            if (
+                        !utils.integratedCampaignsPlacementIds.has(
+                          matchedPlacement.id + ":" + event_category
+                        )
+                      ) {
+                        continue;
+                      }
+          utils.removeIframesByPlacementId(matchedPlacement.id);
+        }
+
+        return EMPTY_PLACEMENTS;
       },
 
       matchLoyaltyPlacements: function () {
@@ -774,6 +796,64 @@
         styleTagNode && styleTagNode.remove();
 
         document.body && document.body.appendChild(styleTag);
+      },
+
+      removeIframesByPlacementId: function (placementId) {
+        if (!utils.integratedCampaignsPlacementIds.has(placementId)) {
+          return;
+        }
+
+        utils.integratedCampaignsPlacementIds.delete(placementId);
+
+        var iframes = document.querySelectorAll(
+          'iframe[src*="matched_placement_ids"][src*="' + placementId + '"]'
+        );
+        var matchedIframes = [];
+
+        for (var i = 0; i < iframes.length; i++) {
+          var iframe = iframes[i];
+          var params = new URL(decodeURIComponent(iframe.src)).searchParams;
+
+          if (!params) {
+            continue;
+          }
+
+          var iframePlacementIds = params.getAll('matched_placement_ids[]');
+
+          if (!iframePlacementIds) {
+            continue;
+          }
+
+          if (iframePlacementIds.includes(String(placementId))) {
+            matchedIframes.push(iframe);
+          }
+        }
+
+        for (var m = 0; m < matchedIframes.length; m++) {
+          utils.removeIframe(matchedIframes[m]);
+        }
+      },
+
+      removeIframe: function (iframe) {
+        if (!iframe) {
+          return;
+        }
+        // reset iframe load state
+
+        var index = utils.lastLoadedIframeName.indexOf(iframe.name);
+
+        if (index !== -1) {
+          utils.lastLoadedIframeName.splice(index, 1);
+        }
+
+        iframe.style.display = 'none';
+
+        // Otherwise it causes a never-ending tab window spinner in Chrome
+        // Yes, the delay should be that big, otherwise it won’t fix the issue
+        setTimeout(function () {
+          iframe.remove();
+          iframe = null;
+        }, 1000);
       },
 
       addIframeElement: function (url, options) {
