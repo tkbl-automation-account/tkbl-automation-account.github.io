@@ -121,6 +121,12 @@ function showTalkableOffer() {
     highlightNavButton("standaloneNav");
 }
 
+function triggerTalkableCampaign() {
+    window._talkableq.push(['authenticate_customer', {}]);
+    window._talkableq.push(['register_affiliate', {}]);
+    console.log("Talkable Campaign Triggered!");
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const siteId = urlParams.get("site");
     const integrationScriptSrc = urlParams.get("integration_script");
