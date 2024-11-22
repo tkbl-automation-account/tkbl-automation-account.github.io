@@ -10,16 +10,43 @@ dataLayer.push({
     'server': urlParams.get('server')
 });
 
+// Function to insert additional scripts
+function insertAdditionalScripts(siteId, integrationScriptSrc) {
+    const server = urlParams.get("server");
+
+    // Determine the placements script URL based on the server
+    const placementsSrc =
+        server !== "prod"
+            ? `//talkable-labs.herokuapp.com/pl.js?lib=https://curebit-staging.s3.amazonaws.com/integration/clients/${siteId}.min.js`
+            : `//talkable-labs.herokuapp.com/pl.js?lib=https://curebit.s3.amazonaws.com/integration/clients/${siteId}.min.js`;
+
+    // Insert placements_obj script
+    const placementsScript = document.createElement("script");
+    placementsScript.src = placementsSrc;
+    placementsScript.id = "placements_obj";
+    document.body.appendChild(placementsScript);
+
+    // Insert tkbl_integration_script
+    if (integrationScriptSrc) {
+        const integrationScript = document.createElement("script");
+        integrationScript.src = integrationScriptSrc;
+        integrationScript.id = "tkbl_integration_script";
+        document.body.appendChild(integrationScript);
+    }
+}
 
 // Initial Talkable script integration
 (function() {
+    insertAdditionalScripts(urlParams.get('site'))
     var tkbl = document.createElement('script');
     tkbl.type = 'text/javascript';
     tkbl.async = true;
-    tkbl.src = 'https://curebit-staging.s3.amazonaws.com/integration/clients/' + urlParams.get('site') + '.min.js';
+    tkbl.src = 'https://tkbl-automation-account.github.io/integrations/spa_exclusions_fix.js';
+//    tkbl.src = 'https://curebit-staging.s3.amazonaws.com/integration/clients/' + urlParams.get('site') + '.min.js';
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(tkbl, s);
 })();
+
 
 window._talkableq = window._talkableq || [];
 window._talkableq.unshift(['init', { site_id: urlParams.get('site') }]);
