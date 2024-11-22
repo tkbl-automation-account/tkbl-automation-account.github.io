@@ -24,27 +24,21 @@ function insertAdditionalScripts(siteId, integrationScriptSrc) {
     const placementsScript = document.createElement("script");
     placementsScript.src = placementsSrc;
     placementsScript.id = "placements_obj";
-    document.body.appendChild(placementsScript);
-
-    // Insert tkbl_integration_script
-    if (integrationScriptSrc) {
-        const integrationScript = document.createElement("script");
-        integrationScript.src = integrationScriptSrc;
-        integrationScript.id = "tkbl_integration_script";
-        document.body.appendChild(integrationScript);
-    }
+    var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(placementsScript, s);
 }
 
 // Initial Talkable script integration
 (function() {
-    insertAdditionalScripts(urlParams.get('site'))
     var tkbl = document.createElement('script');
     tkbl.type = 'text/javascript';
     tkbl.async = true;
     tkbl.src = 'https://tkbl-automation-account.github.io/integrations/spa_exclusions_fix.js';
 //    tkbl.src = 'https://curebit-staging.s3.amazonaws.com/integration/clients/' + urlParams.get('site') + '.min.js';
+
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(tkbl, s);
+    insertAdditionalScripts(urlParams.get('site'));
 })();
 
 
@@ -101,6 +95,7 @@ document.addEventListener("DOMContentLoaded", function() {
         window._talkableq.push(['register_purchase', data]);
 
         // Optionally, clear the form or show a success message
-        alert("Purchase registered successfully!");
+//        alert("Purchase registered successfully!");
+        console.log("Purchase registered successfully!");
     });
 });
