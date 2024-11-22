@@ -6,12 +6,6 @@
     <title>Bootstrap Site with Talkable Integration</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .nav-link.active {
-            font-weight: bold;
-            color: #007bff !important;
-        }
-    </style>
 </head>
 <body>
 
@@ -24,38 +18,36 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="#" id="homeNav" onclick="hidePurchaseForm(); hideTalkableOffer();">Home</a>
+                <a class="nav-link" href="#" onclick="hidePurchaseForm(); hideTalkableOffer();">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" id="purchaseNav" onclick="showPurchaseForm(); hideTalkableOffer();">Purchase</a>
+                <a class="nav-link" href="#" onclick="showPurchaseForm(); hideTalkableOffer();">Purchase</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" id="standaloneNav" onclick="hidePurchaseForm(); showTalkableOffer();">Standalone</a>
+                <a class="nav-link" href="#" onclick="hidePurchaseForm(); showTalkableOffer();">Standalone</a>
             </li>
         </ul>
     </div>
 </nav>
 
-<!-- Page Title -->
-<div class="container mt-3">
-    <h1 id="pageTitle" class="text-center">Home Page</h1>
-</div>
-
 <!-- Site ID Display -->
 <div class="container mt-3">
     <h4>Site ID: <span id="displaySiteId"></span></h4>
-    <h4>Integration Script Source: <span id="displayIntegrationScript"></span></h4>
 </div>
 
 <!-- Talkable Campaign Button (Visible on Home) -->
-<div class="container mt-3" id="talkableCampaignButton">
-    <h2>Home Page</h2>
+<div class="container mt-3" id="talkableCampaignButton" style="display: none;">
     <button class="btn btn-success" onclick="triggerTalkableCampaign()">Join Our Affiliate Program!</button>
+</div>
+
+<div id="talkable-offer">
+    <br>
+    <h2>Standalone</h2>
 </div>
 
 <!-- Purchase Form Section (Initially Hidden) -->
 <div id="purchaseFormSection" class="container mt-5" style="display: none;">
-    <h2>Purchase Page</h2>
+    <h2>Purchase Registration</h2>
     <form id="purchaseForm">
         <div class="form-group">
             <label for="email">Email:</label>
@@ -73,12 +65,6 @@
     </form>
 </div>
 
-<!-- Talkable Offer Section (Initially Hidden) -->
-<div id="talkable-offer" class="container mt-5" style="display: none;">
-    <h2>Standalone Page</h2>
-    <p>This is the standalone page content.</p>
-</div>
-
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -87,6 +73,5 @@
 
 <!-- Talkable Integration -->
 <script src="talkable_integration_extended.js"></script>
-
 </body>
 </html>
