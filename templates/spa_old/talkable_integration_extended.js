@@ -33,7 +33,7 @@ function insertAdditionalScripts(siteId, integrationScriptSrc) {
     var tkbl = document.createElement('script');
     tkbl.type = 'text/javascript';
     tkbl.async = true;
-    tkbl.src = 'spa_exclusions_fix.js';
+    tkbl.src = 'integration_spa_fixed.js';
 //    tkbl.src = 'https://curebit-staging.s3.amazonaws.com/integration/clients/' + urlParams.get('site') + '.min.js';
 
     var s = document.getElementsByTagName('script')[0];
