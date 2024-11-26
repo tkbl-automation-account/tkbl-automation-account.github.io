@@ -4,7 +4,7 @@ const urlParams = new URLSearchParams(queryString);
 window.dataLayer = window.dataLayer || [];
 dataLayer.push({
     'site': urlParams.get('site'),
-    'server': urlParams.get('server')
+    'server': urlParams.get('server'),
     'js_lib': urlParams.get('js_lib')
 });
 
