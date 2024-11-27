@@ -2,21 +2,24 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
-//const site_slug = urlParams.get("site");
-//const server_slug = urlParams.get("server");
-const site_slug = 'testmax-22nov2024';
-const server_slug = 'void';
-
+// Site and server configuration
+const site_slug = "testmax-22nov2024";
+const server_slug = "void";
 
 // Initialize the dataLayer for analytics or tracking purposes
 window.dataLayer = window.dataLayer || [];
 dataLayer.push({
     site: site_slug,
-    server: server_slug
+    server: server_slug,
 });
 
+// Get the base path of the current SPA (e.g., "/mqa/max/")
+const basePath = window.location.pathname.endsWith("/")
+    ? window.location.pathname
+    : window.location.pathname + "/";
+
 // Function to insert additional scripts
-function insertAdditionalScripts(siteId, integrationScriptSrc) {
+function insertAdditionalScripts(siteId) {
     const server = server_slug;
 
     // Determine the placements script URL based on the server
@@ -29,36 +32,33 @@ function insertAdditionalScripts(siteId, integrationScriptSrc) {
     const placementsScript = document.createElement("script");
     placementsScript.src = placementsSrc;
     placementsScript.id = "placements_obj";
-    var s = document.getElementsByTagName("script")[0];
+    const s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(placementsScript, s);
 }
 
 // Initial Talkable script integration
 (function () {
-    var tkbl = document.createElement("script");
+    const tkbl = document.createElement("script");
     tkbl.type = "text/javascript";
     tkbl.async = true;
     tkbl.src = "integration_spa_fixed.js";
 
-    var s = document.getElementsByTagName("script")[0];
+    const s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(tkbl, s);
     insertAdditionalScripts(site_slug);
 })();
 
+// Helper function to get server URL
 function getServer(server) {
-
     switch (server) {
         case "void":
             return "//void.talkable.com";
-            break;
         case "bastion":
             return "//bastion.talkable.com";
-            break;
         case "prod":
             return "//talkable.com";
-
         default:
-            return server
+            return server;
     }
 }
 
@@ -66,22 +66,49 @@ function getServer(server) {
 window._talkableq = window._talkableq || [];
 window._talkableq.unshift(["init", { site_id: site_slug, server: getServer(server_slug) }]);
 
-// Function to trigger Talkable campaign
-function triggerTalkableCampaign() {
-    // Example: Trigger a Talkable campaign. Adjust according to your campaign setup.
-    window._talkableq.push(["authenticate_customer", {}]);
-    window._talkableq.push(["register_affiliate", {}]);
+// Navigation Handlers
+function navigateHome() {
+    window.history.pushState({}, "Home", `${basePath}`);
+    document.title = "Home";
+    hidePurchaseForm();
+    showTalkableOffer();
+}
+
+function navigatePurchase() {
+    window.history.pushState({}, "Purchase", `${basePath}purchase`);
+    document.title = "Purchase";
+    showPurchaseForm();
+    hideTalkableOffer();
+}
+
+function navigateStandalone() {
+    window.history.pushState({}, "Standalone", `${basePath}sa`);
+    document.title = "Standalone";
+    const container = document.getElementById("talkable-offer");
+    container.innerHTML = `<h2>Welcome to Standalone Page</h2>`;
+    container.style.display = "block";
+    hidePurchaseForm();
+    showTalkableOffer();
+}
+
+function navigateToProductOne() {
+    window.history.pushState({}, "Product#1", `${basePath}product_one`);
+    document.title = "Product#1";
+    const container = document.getElementById("talkable-offer");
+    container.innerHTML = `<h2>Welcome to Product#1 Page</h2>`;
+    container.style.display = "block";
+    hidePurchaseForm();
 }
 
 // Show and Hide Purchase Form
 function showPurchaseForm() {
     document.getElementById("purchaseFormSection").style.display = "block";
-    document.getElementById("talkableCampaignButton").style.display = "none"; // Hide campaign button when showing the purchase form
+    document.getElementById("talkableCampaignButton").style.display = "none";
 }
 
 function hidePurchaseForm() {
     document.getElementById("purchaseFormSection").style.display = "none";
-    document.getElementById("talkableCampaignButton").style.display = "block"; // Show campaign button when not on the purchase form
+    document.getElementById("talkableCampaignButton").style.display = "block";
 }
 
 function hideTalkableOffer() {
@@ -90,23 +117,6 @@ function hideTalkableOffer() {
 
 function showTalkableOffer() {
     document.getElementById("talkable-offer").style.display = "block";
-}
-
-// Function to handle navigation to Product#1
-function navigateToProductOne() {
-    // Change the URL without reloading the page
-    window.history.pushState({}, "Product#1", "/product_one");
-
-    // Update the page title
-    document.title = "Product#1";
-
-    // Update the page content dynamically
-    const container = document.getElementById("talkable-offer");
-    container.innerHTML = `<h2>Welcome to Product#1 Page</h2>`;
-    container.style.display = "block";
-
-    // Hide other sections if necessary
-    hidePurchaseForm();
 }
 
 // Event listener for DOMContentLoaded
@@ -120,12 +130,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add event listener to the purchase form
     document.getElementById("purchaseForm").addEventListener("submit", function (e) {
         e.preventDefault(); // Prevent default form submission
-        var email = document.getElementById("email").value;
-        var orderNumber = document.getElementById("orderNumber").value;
-        var subtotal = document.getElementById("subtotal").value;
+        const email = document.getElementById("email").value;
+        const orderNumber = document.getElementById("orderNumber").value;
+        const subtotal = document.getElementById("subtotal").value;
 
         // Construct the data object for Talkable
-        var data = {
+        const data = {
             purchase: {
                 order_number: orderNumber,
                 subtotal: subtotal,
@@ -137,12 +147,23 @@ document.addEventListener("DOMContentLoaded", function () {
         // Submit data to Talkable
         window._talkableq.push(["register_purchase", data]);
 
-        // Optionally, clear the form or show a success message
+        // Log success message
         console.log("Purchase registered successfully!");
     });
 
     // Handle initial state based on the URL
-    if (window.location.pathname === "/product_one") {
-        navigateToProductOne();
+    const currentPath = window.location.pathname.replace(basePath, "");
+    switch (currentPath) {
+        case "purchase":
+            navigatePurchase();
+            break;
+        case "sa":
+            navigateStandalone();
+            break;
+        case "product_one":
+            navigateToProductOne();
+            break;
+        default:
+            navigateHome();
     }
 });
