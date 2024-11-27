@@ -70,6 +70,9 @@ window._talkableq.unshift(["init", { site_id: site_slug, server: getServer(serve
 function navigateHome() {
     window.history.pushState({}, "Home", `${basePath}`);
     document.title = "Home";
+    const container = document.getElementById("page-title");
+        container.innerHTML = `<h2>Home Page</h2>`;
+        container.style.display = "block";
     hidePurchaseForm();
 //    showTalkableOffer();
 }
@@ -84,8 +87,8 @@ function navigatePurchase() {
 function navigateStandalone() {
     window.history.pushState({}, "Standalone", `${basePath}sa`);
     document.title = "Standalone";
-    const container = document.getElementById("talkable-offer");
-    container.innerHTML = `<h2>Welcome to Standalone Page</h2>`;
+    const container = document.getElementById("page-title");
+    container.innerHTML = `<h2>Standalone Page</h2>`;
     container.style.display = "block";
     hidePurchaseForm();
 //    showTalkableOffer();
@@ -94,7 +97,7 @@ function navigateStandalone() {
 function navigateToProductOne() {
     window.history.pushState({}, "Product#1", `${basePath}product_one`);
     document.title = "Product#1";
-    const container = document.getElementById("talkable-offer");
+    const container = document.getElementById("page-title");
     container.innerHTML = `<h2>Welcome to Product#1 Page</h2>`;
     container.style.display = "block";
     hidePurchaseForm();
