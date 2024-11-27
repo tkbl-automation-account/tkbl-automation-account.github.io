@@ -74,14 +74,12 @@ function navigateHome() {
         container.innerHTML = `<h2>Home Page</h2>`;
         container.style.display = "block";
     hidePurchaseForm();
-//    showTalkableOffer();
 }
 
 function navigatePurchase() {
     window.history.pushState({}, "Purchase", `${basePath}purchase`);
     document.title = "Purchase";
     showPurchaseForm();
-//    hideTalkableOffer();
 }
 
 function navigateStandalone() {
@@ -91,7 +89,6 @@ function navigateStandalone() {
     container.innerHTML = `<h2>Standalone Page</h2>`;
     container.style.display = "block";
     hidePurchaseForm();
-//    showTalkableOffer();
 }
 
 function navigateToProductOne() {
@@ -112,14 +109,6 @@ function showPurchaseForm() {
 function hidePurchaseForm() {
     document.getElementById("purchaseFormSection").style.display = "none";
     document.getElementById("talkableCampaignButton").style.display = "block";
-}
-
-//function hideTalkableOffer() {
-//    document.getElementById("talkable-offer").style.display = "none";
-//}
-
-function showTalkableOffer() {
-    document.getElementById("talkable-offer").style.display = "block";
 }
 
 // Event listener for DOMContentLoaded
