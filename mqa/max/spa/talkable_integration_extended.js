@@ -71,14 +71,14 @@ function navigateHome() {
     window.history.pushState({}, "Home", `${basePath}`);
     document.title = "Home";
     hidePurchaseForm();
-    showTalkableOffer();
+//    showTalkableOffer();
 }
 
 function navigatePurchase() {
     window.history.pushState({}, "Purchase", `${basePath}purchase`);
     document.title = "Purchase";
     showPurchaseForm();
-    hideTalkableOffer();
+//    hideTalkableOffer();
 }
 
 function navigateStandalone() {
@@ -88,7 +88,7 @@ function navigateStandalone() {
     container.innerHTML = `<h2>Welcome to Standalone Page</h2>`;
     container.style.display = "block";
     hidePurchaseForm();
-    showTalkableOffer();
+//    showTalkableOffer();
 }
 
 function navigateToProductOne() {
@@ -111,9 +111,9 @@ function hidePurchaseForm() {
     document.getElementById("talkableCampaignButton").style.display = "block";
 }
 
-function hideTalkableOffer() {
-    document.getElementById("talkable-offer").style.display = "none";
-}
+//function hideTalkableOffer() {
+//    document.getElementById("talkable-offer").style.display = "none";
+//}
 
 function showTalkableOffer() {
     document.getElementById("talkable-offer").style.display = "block";
