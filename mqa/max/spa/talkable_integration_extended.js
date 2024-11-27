@@ -143,19 +143,19 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Purchase registered successfully!");
     });
 
-    // Handle initial state based on the URL
-    const currentPath = window.location.pathname.replace(basePath, "");
-    switch (currentPath) {
-        case "purchase":
-            navigatePurchase();
-            break;
-        case "sa":
-            navigateStandalone();
-            break;
-        case "product_one":
-            navigateToProductOne();
-            break;
-        default:
-            navigateHome();
-    }
+//    // Handle initial state based on the URL
+//    const currentPath = window.location.pathname.replace(basePath, "");
+//    switch (currentPath) {
+//        case "purchase":
+//            navigatePurchase();
+//            break;
+//        case "sa":
+//            navigateStandalone();
+//            break;
+//        case "product_one":
+//            navigateToProductOne();
+//            break;
+//        default:
+//            navigateHome();
+//    }
 });
