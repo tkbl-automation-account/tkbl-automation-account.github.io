@@ -1,18 +1,23 @@
-//var siteId = 'integrationtest402'; // Define site_id as a variable
-
-
+// Extract query parameters from the URL
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
+//const site_slug = urlParams.get("site");
+//const server_slug = urlParams.get("server");
+const site_slug = 'testmax-22nov2024';
+const server_slug = 'void';
+
+
+// Initialize the dataLayer for analytics or tracking purposes
 window.dataLayer = window.dataLayer || [];
 dataLayer.push({
-    'site': urlParams.get('site'),
-    'server': urlParams.get('server')
+    site: site_slug,
+    server: server_slug
 });
 
 // Function to insert additional scripts
 function insertAdditionalScripts(siteId, integrationScriptSrc) {
-    const server = urlParams.get("server");
+    const server = server_slug;
 
     // Determine the placements script URL based on the server
     const placementsSrc =
@@ -24,58 +29,96 @@ function insertAdditionalScripts(siteId, integrationScriptSrc) {
     const placementsScript = document.createElement("script");
     placementsScript.src = placementsSrc;
     placementsScript.id = "placements_obj";
-    var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(placementsScript, s);
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(placementsScript, s);
 }
 
 // Initial Talkable script integration
-(function() {
-    var tkbl = document.createElement('script');
-    tkbl.type = 'text/javascript';
+(function () {
+    var tkbl = document.createElement("script");
+    tkbl.type = "text/javascript";
     tkbl.async = true;
-    tkbl.src = 'integration_spa_fixed.js';
-//    tkbl.src = 'https://curebit-staging.s3.amazonaws.com/integration/clients/' + urlParams.get('site') + '.min.js';
+    tkbl.src = "integration_spa_fixed.js";
 
-    var s = document.getElementsByTagName('script')[0];
+    var s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(tkbl, s);
-    insertAdditionalScripts(urlParams.get('site'));
+    insertAdditionalScripts(site_slug);
 })();
 
+function getServer(server) {
 
+    switch (server) {
+        case "void":
+            return "//void.talkable.com";
+            break;
+        case "bastion":
+            return "//bastion.talkable.com";
+            break;
+        case "prod":
+            return "//talkable.com";
+
+        default:
+            return server
+    }
+}
+
+// Initialize Talkable queue
 window._talkableq = window._talkableq || [];
-window._talkableq.unshift(['init', { site_id: urlParams.get('site') }]);
+window._talkableq.unshift(["init", { site_id: site_slug, server: getServer(server_slug) }]);
 
 // Function to trigger Talkable campaign
 function triggerTalkableCampaign() {
     // Example: Trigger a Talkable campaign. Adjust according to your campaign setup.
-    window._talkableq.push(['authenticate_customer', {}]);
-    window._talkableq.push(['register_affiliate', {}]);
+    window._talkableq.push(["authenticate_customer", {}]);
+    window._talkableq.push(["register_affiliate", {}]);
 }
 
 // Show and Hide Purchase Form
 function showPurchaseForm() {
-    document.getElementById('purchaseFormSection').style.display = 'block';
-    document.getElementById('talkableCampaignButton').style.display = 'none'; // Hide campaign button when showing the purchase form
+    document.getElementById("purchaseFormSection").style.display = "block";
+    document.getElementById("talkableCampaignButton").style.display = "none"; // Hide campaign button when showing the purchase form
 }
 
 function hidePurchaseForm() {
-    document.getElementById('purchaseFormSection').style.display = 'none';
-    document.getElementById('talkableCampaignButton').style.display = 'block'; // Show campaign button when not on the purchase form
+    document.getElementById("purchaseFormSection").style.display = "none";
+    document.getElementById("talkableCampaignButton").style.display = "block"; // Show campaign button when not on the purchase form
 }
 
 function hideTalkableOffer() {
-    document.getElementById('talkable-offer').style.display = 'none';
+    document.getElementById("talkable-offer").style.display = "none";
 }
 
 function showTalkableOffer() {
-    document.getElementById('talkable-offer').style.display = 'block';
+    document.getElementById("talkable-offer").style.display = "block";
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("displaySiteId").textContent = urlParams.get('site');
-    hidePurchaseForm(); // Initially hide the purchase form and show the campaign button
+// Function to handle navigation to Product#1
+function navigateToProductOne() {
+    // Change the URL without reloading the page
+    window.history.pushState({}, "Product#1", "/product_one");
 
-    document.getElementById("purchaseForm").addEventListener("submit", function(e) {
+    // Update the page title
+    document.title = "Product#1";
+
+    // Update the page content dynamically
+    const container = document.getElementById("talkable-offer");
+    container.innerHTML = `<h2>Welcome to Product#1 Page</h2>`;
+    container.style.display = "block";
+
+    // Hide other sections if necessary
+    hidePurchaseForm();
+}
+
+// Event listener for DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+    // Display the site ID in the header
+    document.getElementById("displaySiteId").textContent = site_slug;
+
+    // Initially hide the purchase form and show the campaign button
+    hidePurchaseForm();
+
+    // Add event listener to the purchase form
+    document.getElementById("purchaseForm").addEventListener("submit", function (e) {
         e.preventDefault(); // Prevent default form submission
         var email = document.getElementById("email").value;
         var orderNumber = document.getElementById("orderNumber").value;
@@ -87,15 +130,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 order_number: orderNumber,
                 subtotal: subtotal,
                 email: email,
-                items: []
-            }
+                items: [],
+            },
         };
 
         // Submit data to Talkable
-        window._talkableq.push(['register_purchase', data]);
+        window._talkableq.push(["register_purchase", data]);
 
         // Optionally, clear the form or show a success message
-//        alert("Purchase registered successfully!");
         console.log("Purchase registered successfully!");
     });
+
+    // Handle initial state based on the URL
+    if (window.location.pathname === "/product_one") {
+        navigateToProductOne();
+    }
 });
