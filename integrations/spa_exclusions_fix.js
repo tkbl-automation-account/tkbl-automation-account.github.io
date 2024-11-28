@@ -1,6 +1,5 @@
+//updated on 28 Nov 11:26
 // https://github.com/talkable/talkable-integration/blob/b3e4d59c627d2a180a76ec6f49320dbec7b0cb49/src/integration.js
-// updated on 22 Nov 2024 09:20
-
 /**
  * @prettier
  */
