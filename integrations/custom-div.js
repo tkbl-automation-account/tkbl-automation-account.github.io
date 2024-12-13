@@ -1,7 +1,7 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/pull/743
-//https://raw.githubusercontent.com/talkable/talkable-integration/b481784f7d00e0e1a749b2d3a68dd369f14ec473/src/integration.js?token=GHSAT0AAAAAACSIPDKFSDI3RLDUPUECDUJMZYM5MYA
-//updated on 28 Oct 2024, 10:17
+//updated on 13 Dec 2024, 14:21
+
 
 /**
  * @prettier
@@ -52,6 +52,29 @@
       gleamRewardCallback: undefined,
       placements: [],
       matchedCountries: [],
+      forcedPlacements: [],
+      eventCategoryConfig: {
+        affiliate_member: {
+          action: 'register_affiliate',
+          placements: 'placements',
+        },
+        claim_by_name_popup: {
+          action: 'show_claim_by_name',
+          placements: 'placements',
+        },
+        email_capture_popup: {
+          action: 'show_email_capture_offer',
+          placements: 'conversion_placements',
+        },
+        loyalty_dashboard: {
+          action: 'show_loyalty',
+          placements: 'loyalty_placements',
+        },
+        loyalty_widget: {
+          action: 'show_loyalty',
+          placements: 'loyalty_placements',
+        },
+      },
 
       define: function (name, callback) {
         if (methods[name]) {
@@ -333,25 +356,6 @@
         });
       },
 
-      showCampaignCondition: function () {
-        utils.location_parameter('tkbl_campaign_id') ||
-          utils.location_parameter('campaign_tags');
-      },
-
-      triggerPlacements: function (placements, method) {
-        if (utils.showCampaignCondition) {
-          window._talkableq.push([method, {}]);
-        } else if (placements.length > 0 && placements !== EMPTY_PLACEMENTS) {
-          placements.forEach(function (placement) {
-            matched_placement_ids = Array.isArray(placement) ? placement : [placement];
-            window._talkableq.push([
-              method,
-              { matched_placement_ids: matched_placement_ids },
-            ]);
-          });
-        }
-      },
-
       launchCampaigns: function () {
         if (typeof talkablePlacementsConfig === 'undefined') {
           return;
@@ -377,12 +381,55 @@
           'loyalty_widget',
           talkablePlacementsConfig.loyalty_placements
         );
+        var showCampaignCondition =
+          utils.location_parameter('tkbl_campaign_id') ||
+          utils.location_parameter('campaign_tags');
 
-        utils.triggerPlacements(referralPlacements, 'register_affiliate');
-        utils.triggerPlacements(conversionPlacements, 'show_email_capture_offer');
-        utils.triggerPlacements(loyaltyDashboardPlacements, 'show_loyalty');
-        utils.triggerPlacements(loyaltyWidgetPlacements, 'show_loyalty');
-        utils.triggerPlacements(nameSharingPlacements, 'show_claim_by_name');
+        if (
+          showCampaignCondition ||
+          (referralPlacements.length > 0 && referralPlacements !== EMPTY_PLACEMENTS)
+        ) {
+          window._talkableq.push(['register_affiliate', {}]);
+        }
+
+        if (
+          showCampaignCondition ||
+          (conversionPlacements.length > 0 && conversionPlacements !== EMPTY_PLACEMENTS)
+        ) {
+          window._talkableq.push(['show_email_capture_offer', {}]);
+        }
+
+        var showLoyaltyDashboard =
+          loyaltyDashboardPlacements.length > 0 &&
+          loyaltyDashboardPlacements !== EMPTY_PLACEMENTS;
+        var showLoyaltyWidget =
+          loyaltyWidgetPlacements.length > 0 &&
+          loyaltyWidgetPlacements !== EMPTY_PLACEMENTS;
+
+        if (showCampaignCondition || showLoyaltyDashboard || showLoyaltyWidget) {
+          window._talkableq.push(['show_loyalty', {}]);
+        }
+
+        var showClaimByNameCampaigns =
+          nameSharingPlacements.length > 0 && nameSharingPlacements !== EMPTY_PLACEMENTS;
+
+        if (showCampaignCondition || showClaimByNameCampaigns) {
+          window._talkableq.push(['show_claim_by_name', {}]);
+        }
+
+        if (utils.forcedPlacements.length) {
+          for (var key in uniqueForced) {
+            if (Object.prototype.hasOwnProperty.call(uniqueForced, key)) {
+              var forced = uniqueForced[key];
+              var forcedAction = eventCategoryConfig[forced.event_category].action;
+
+              window._talkableq.push([
+                forcedAction,
+                { matched_placement_ids: [forced.placement_id] },
+              ]);
+            }
+          }
+        }
       },
 
       notifyIntegrationError: function (message, dev) {
@@ -529,27 +576,6 @@
         }
       },
 
-      filterPlacementsByHighestPriority: function (placements) {
-        var result = [];
-        var containersMap = {};
-
-        placements.forEach(function (placement) {
-          if (!containersMap[placement.container_name]) {
-            containersMap[placement.container_name] = placement;
-          } else {
-            if (placement.prior < containersMap[placement.container_name].prior) {
-              containersMap[placement.container_name] = placement;
-            }
-          }
-        });
-
-        for (var key in containersMap) {
-          result.push(containersMap[key]);
-        }
-
-        return result;
-      },
-
       match_placements: function (event_category, placements) {
         if (typeof event_category === 'undefined') {
           event_category = 'affiliate_member';
@@ -626,8 +652,15 @@
 
           for (var j = 0; j < matchers.length; j++) {
             if (utils.matches(matchers[j])) {
-              matched.push(placement);
-              utils.placements.push(placement);
+              if (placement.forced) {
+                utils.forcedPlacements.push({
+                  event_category: event_category,
+                  placement_id: placement.id,
+                });
+              } else {
+                matched.push(placement.id);
+              }
+              utils.placements.push(placement.id);
               if (matchers[j] && matchers[j].site_country_id) {
                 utils.matchedCountries.push(matchers[j].site_country_id);
               }
@@ -636,43 +669,11 @@
           }
         }
 
-        if (matched.length === 1) {
-          matched = [matched[0].id];
-        } else if (matched.length > 1 && !utils.showCampaignCondition) {
-          var gleamPlacements = matched.filter(function (placement) {
-            return placement.appearance === 'gleam';
-          });
-          var otherPlacements = matched.filter(function (placement) {
-            return placement.appearance !== 'gleam';
-          });
-
-          otherPlacements = utils.filterPlacementsByHighestPriority(otherPlacements);
-          var result = [];
-
-          if (gleamPlacements.length > 0) {
-            gleamPlacements.forEach(function (gleamPlacement) {
-              otherPlacements.forEach(function (otherPlacement) {
-                if (otherPlacement.container_name === gleamPlacement.container_name) {
-                  result.push([gleamPlacement.id, otherPlacement.id]);
-                } else {
-                  result.push(gleamPlacement.id, otherPlacement.id);
-                }
-              });
-            });
-          } else {
-            otherPlacements.forEach(function (placement) {
-              result.push(placement.id);
-            });
-          }
-
-          matched = result.map(function (group) {
-            return group.length === 1 ? group[0] : group;
-          });
-        } else {
-          matched = matched.map(function (placement) {
-            return placement.id;
-          });
-        }
+        matched = matched
+          .sort(function (a, b) {
+            return a.priority - b.priority;
+          })
+          .slice(0, 1);
 
         return matched.length ? matched : EMPTY_PLACEMENTS;
       },
@@ -797,7 +798,6 @@
         options.allowTransparency = true;
         options.src = url;
         options.allow = 'camera *;microphone *;web-share';
-
         var container = options.container || utils.generateRandomIframeName();
 
         delete options.container;
@@ -951,34 +951,31 @@
           }
 
           if (
-            data.integration_css ||
-            (data.integration_css && data.integration_css.css)
+            data.campaign_appearance === 'inline' &&
+            iframe.parentNode &&
+            utils.isGenerated(iframe.parentNode)
           ) {
-            styleTag = document.createElement('style');
-            styleTag.id = data.integration_css.attribute_value;
-            styleTag.dataset.talkableIntegrationCss = true;
-            styleTag.type = 'text/css';
-            if (styleTag.styleSheet) {
-              styleTag.styleSheet.cssText = data.integration_css.css;
-            } else {
-              styleTag.appendChild(document.createTextNode(data.integration_css.css));
-            }
+            return;
+          }
+          if (!data.integration_css && !data.integration_css.css) {
+            return;
+          }
+          styleTag = document.createElement('style');
+          styleTag.id = data.integration_css.attribute_value;
+          styleTag.dataset.talkableIntegrationCss = true;
+          styleTag.type = 'text/css';
 
-            var styleTagNode = document.getElementById(
-              data.integration_css.attribute_value
-            );
+          if (styleTag.styleSheet) {
+            styleTag.styleSheet.cssText = data.integration_css.css;
+          } else {
+            styleTag.appendChild(document.createTextNode(data.integration_css.css));
+          }
 
-            if (styleTagNode) {
-              styleTagNode.remove();
-            }
-
-            if (document.body) {
-              document.body.appendChild(styleTag);
-            }
+          if (!document.getElementById(data.integration_css.attribute_value)) {
+            document.body && document.body.appendChild(styleTag);
           }
 
           if (
-            data.integration_css &&
             data.integration_css.attribute_name &&
             data.integration_css.attribute_value
           ) {
