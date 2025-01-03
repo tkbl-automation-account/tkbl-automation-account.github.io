@@ -1,7 +1,6 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/pull/743
-//updated on 13 Dec 2024, 14:21
-
+//updated on 3 Jan 2025, 10:42
 
 /**
  * @prettier
@@ -52,29 +51,7 @@
       gleamRewardCallback: undefined,
       placements: [],
       matchedCountries: [],
-      forcedPlacements: [],
-      eventCategoryConfig: {
-        affiliate_member: {
-          action: 'register_affiliate',
-          placements: 'placements',
-        },
-        claim_by_name_popup: {
-          action: 'show_claim_by_name',
-          placements: 'placements',
-        },
-        email_capture_popup: {
-          action: 'show_email_capture_offer',
-          placements: 'conversion_placements',
-        },
-        loyalty_dashboard: {
-          action: 'show_loyalty',
-          placements: 'loyalty_placements',
-        },
-        loyalty_widget: {
-          action: 'show_loyalty',
-          placements: 'loyalty_placements',
-        },
-      },
+      integratedCampaignsPlacementIds: new Set(),
 
       define: function (name, callback) {
         if (methods[name]) {
@@ -416,20 +393,6 @@
         if (showCampaignCondition || showClaimByNameCampaigns) {
           window._talkableq.push(['show_claim_by_name', {}]);
         }
-
-        if (utils.forcedPlacements.length) {
-          for (var key in uniqueForced) {
-            if (Object.prototype.hasOwnProperty.call(uniqueForced, key)) {
-              var forced = uniqueForced[key];
-              var forcedAction = eventCategoryConfig[forced.event_category].action;
-
-              window._talkableq.push([
-                forcedAction,
-                { matched_placement_ids: [forced.placement_id] },
-              ]);
-            }
-          }
-        }
       },
 
       notifyIntegrationError: function (message, dev) {
@@ -652,14 +615,7 @@
 
           for (var j = 0; j < matchers.length; j++) {
             if (utils.matches(matchers[j])) {
-              if (placement.forced) {
-                utils.forcedPlacements.push({
-                  event_category: event_category,
-                  placement_id: placement.id,
-                });
-              } else {
-                matched.push(placement.id);
-              }
+							matched.push(placement.id);
               utils.placements.push(placement.id);
               if (matchers[j] && matchers[j].site_country_id) {
                 utils.matchedCountries.push(matchers[j].site_country_id);
@@ -669,13 +625,33 @@
           }
         }
 
-        matched = matched
-          .sort(function (a, b) {
-            return a.priority - b.priority;
-          })
-          .slice(0, 1);
+        if (matched.length) {
+          for (var m = 0; m < matched.length; m++) {
+            var key = matched[m] + ':' + event_category;
 
-        return matched.length ? matched : EMPTY_PLACEMENTS;
+            utils.integratedCampaignsPlacementIds.add(key);
+          }
+
+          return matched;
+        }
+
+        for (var n = 0; n < placements.length; n++) {
+          var matchedPlacement = placements[n];
+
+          if (
+            !utils.integratedCampaignsPlacementIds.has(
+              matchedPlacement.id + ':' + event_category
+            )
+          ) {
+            continue;
+          }
+          utils.integratedCampaignsPlacementIds.delete(
+            matchedPlacement.id + ':' + event_category
+          );
+          utils.removeIframesByPlacementId(matchedPlacement.id);
+        }
+
+        return EMPTY_PLACEMENTS;
       },
 
       matchLoyaltyPlacements: function () {
@@ -740,32 +716,72 @@
       },
 
       insertIframeIntoContainer: function (iframe, containerId) {
-        var containerEl = document.getElementById(containerId.replace('#', ''));
-
-        if (containerEl) {
-          containerEl.innerHTML = '';
-          containerEl.appendChild(iframe);
-          // clear other containers
-          var cs = document.querySelectorAll('#' + containerId);
-
-          for (var i = 1; i < cs.length; i++) {
-            cs[i].remove();
-          }
-        } else {
-          this.domReady(function () {
-            containerEl = document.getElementById(containerId.replace('#', ''));
-            if (containerEl) {
-              containerEl.innerHTML = '';
-            } else {
-              containerEl = document.createElement('div');
-              containerEl.setAttribute('data-talkable-generated', true);
-              containerEl.setAttribute('id', containerId);
-
-              document.body.appendChild(containerEl);
-            }
-            containerEl.appendChild(iframe);
-          });
+        // Sanitize containerId
+        containerId = containerId.replace('#', '');
+        if (!/^[A-Za-z][A-Za-z0-9\-\_:\.]*$/.test(containerId)) {
+          throw new Error('Invalid containerId');
         }
+
+        var containerEl;
+        var timeoutId;
+        var insertIframeIntervalId;
+        var isInserted = false;
+
+        function tryInsertIframe() {
+          if (isInserted) {
+            return;
+          }
+          containerEl = document.getElementById(containerId);
+
+          if (containerEl) {
+            containerEl.innerHTML = '';
+            containerEl.appendChild(iframe);
+            isInserted = true;
+
+            var cs = document.querySelectorAll('#' + CSS.escape(containerId));
+
+            for (var i = 1; i < cs.length; i++) {
+              cs[i].remove();
+            }
+
+            clearTimeout(timeoutId);
+            clearInterval(insertIframeIntervalId);
+          }
+        }
+
+        tryInsertIframe();
+        // Try inserting the iframe every 200ms
+        insertIframeIntervalId = setInterval(tryInsertIframe, 200);
+
+        // Stop trying after 30 seconds
+        timeoutId = setTimeout(function () {
+          clearInterval(insertIframeIntervalId);
+          if (!isInserted) {
+            utils.log('Failed to insert iframe within 30 seconds.');
+          }
+        }, 30000);
+
+        this.domReady(function () {
+          if (isInserted) {
+            return;
+          }
+
+          containerEl = document.getElementById(containerId);
+          if (containerEl) {
+            containerEl.innerHTML = '';
+          } else {
+            containerEl = document.createElement('div');
+            containerEl.setAttribute('data-talkable-generated', true);
+            containerEl.setAttribute('id', containerId);
+
+            document.body.appendChild(containerEl);
+          }
+          containerEl.appendChild(iframe);
+          isInserted = true;
+
+          clearTimeout(timeoutId);
+          clearInterval(insertIframeIntervalId);
+        });
       },
 
       setIntegrationCss: function (data) {
@@ -788,6 +804,58 @@
         styleTagNode && styleTagNode.remove();
 
         document.body && document.body.appendChild(styleTag);
+      },
+
+      removeIframesByPlacementId: function (placementId) {
+        var iframes = document.querySelectorAll(
+          'iframe[src*="matched_placement_ids"][src*="' + placementId + '"]'
+        );
+        var matchedIframes = [];
+
+        for (var i = 0; i < iframes.length; i++) {
+          var iframe = iframes[i];
+          var params = new URL(decodeURIComponent(iframe.src)).searchParams;
+
+          if (!params) {
+            continue;
+          }
+
+          var iframePlacementIds = params.getAll('matched_placement_ids[]');
+
+          if (!iframePlacementIds) {
+            continue;
+          }
+
+          if (iframePlacementIds.includes(String(placementId))) {
+            matchedIframes.push(iframe);
+          }
+        }
+
+        for (var m = 0; m < matchedIframes.length; m++) {
+          utils.removeIframe(matchedIframes[m]);
+        }
+      },
+
+      removeIframe: function (iframe) {
+        if (!iframe) {
+          return;
+        }
+        // reset iframe load state
+
+        var index = utils.lastLoadedIframeName.indexOf(iframe.name);
+
+        if (index !== -1) {
+          utils.lastLoadedIframeName.splice(index, 1);
+        }
+
+        iframe.style.display = 'none';
+
+        // Otherwise it causes a never-ending tab window spinner in Chrome
+        // Yes, the delay should be that big, otherwise it won’t fix the issue
+        setTimeout(function () {
+          iframe.remove();
+          iframe = null;
+        }, 1000);
       },
 
       addIframeElement: function (url, options) {
