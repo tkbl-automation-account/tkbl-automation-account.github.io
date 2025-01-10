@@ -1,6 +1,6 @@
 //PR-22076
 //https://github.com/talkable/talkable-integration/pull/743
-//updated on 3 Jan 2025, 10:42
+//updated on 10 Jan 2025, 11:32
 
 /**
  * @prettier
@@ -615,7 +615,7 @@
 
           for (var j = 0; j < matchers.length; j++) {
             if (utils.matches(matchers[j])) {
-							matched.push(placement.id);
+              matched.push(placement.id);
               utils.placements.push(placement.id);
               if (matchers[j] && matchers[j].site_country_id) {
                 utils.matchedCountries.push(matchers[j].site_country_id);
