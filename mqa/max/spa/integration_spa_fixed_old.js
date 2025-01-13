@@ -1,7 +1,5 @@
-//PR-22076
-//https://github.com/talkable/talkable-integration/pull/743
-//updated on 10 Jan 2025, 11:32
-
+//updated on 28 Nov 11:26
+// https://github.com/talkable/talkable-integration/blob/b3e4d59c627d2a180a76ec6f49320dbec7b0cb49/src/integration.js
 /**
  * @prettier
  */
@@ -645,9 +643,7 @@
           ) {
             continue;
           }
-          utils.integratedCampaignsPlacementIds.delete(
-            matchedPlacement.id + ':' + event_category
-          );
+
           utils.removeIframesByPlacementId(matchedPlacement.id);
         }
 
@@ -807,6 +803,8 @@
       },
 
       removeIframesByPlacementId: function (placementId) {
+        utils.integratedCampaignsPlacementIds.delete(placementId);
+
         var iframes = document.querySelectorAll(
           'iframe[src*="matched_placement_ids"][src*="' + placementId + '"]'
         );
@@ -1310,27 +1308,6 @@
         }
       },
 
-      matchContainerName: function (placementIds) {
-        var placements = talkablePlacementsConfig.placements
-          .concat(
-            talkablePlacementsConfig.conversion_placements,
-            talkablePlacementsConfig.loyalty_placements
-          )
-          .filter(function (el) {
-            return el && el.id && el.container_name;
-          });
-
-        for (var i = 0, placement; i < placements.length; i++) {
-          placement = placements[i];
-
-          if (placementIds.indexOf(placement.id) !== -1 && placement.container_name) {
-            return placement.container_name;
-          }
-        }
-
-        return null;
-      },
-
       cleanupRegisterData: function (data) {
         delete data.campaign_tags;
         delete data.device; // deprecated parameter
@@ -1726,16 +1703,8 @@
 
         var affiliate_member =
           registerData.customer || registerData.affiliate_member || {};
-
-        var matchedPlacementIds =
-          registerData.matched_placement_ids ||
-          utils.match_placements('affiliate_member');
-
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-offer';
-
         var options = {
-          iframe: registerData.iframe || utils.defaultIframeOptions(containerName),
+          iframe: registerData.iframe || {},
           trigger_widget: registerData.trigger_widget || {},
         };
         var verify_integration =
@@ -1767,7 +1736,9 @@
         }
 
         delete customerData.accepted_cookies;
-
+        var matched_placement_ids =
+          registerData.matched_placement_ids ||
+          utils.match_placements('affiliate_member');
         var origin_params = utils.withoutProperties(
           ['currency', 'language'],
           utils.merge(customerData, affiliate_member)
@@ -1783,7 +1754,7 @@
           integration_platform: config.integration_platform,
           tkbl_expand:
             utils.location_parameter('tkbl_expand') || registerData.expand_trigger_widget,
-          matched_placement_ids: matchedPlacementIds,
+          matched_placement_ids: matched_placement_ids,
           matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
@@ -1800,7 +1771,7 @@
           utils.formIframe(options, '/affiliate_members/create', parameters);
         } else {
           // Avoid query completely when no placements matched for affiliate member
-          if (matchedPlacementIds !== EMPTY_PLACEMENTS) {
+          if (matched_placement_ids !== EMPTY_PLACEMENTS) {
             utils.formStaticWidget(options, parameters) ||
               utils.formIframe(options, '/affiliate_members/create', parameters);
           } else {
@@ -1834,12 +1805,8 @@
 
         delete customerData.accepted_cookies;
 
-        var matchedPlacementIds = utils.match_placements('purchase');
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-post-purchase';
-
         var options = {
-          iframe: registerData.iframe || utils.defaultIframeOptions(containerName),
+          iframe: registerData.iframe || {},
           trigger_widget: registerData.trigger_widget || {},
         };
         var campaign_tags =
@@ -1865,7 +1832,7 @@
           currency: registerData.currency || customerData.currency,
           language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
-          matched_placement_ids: matchedPlacementIds,
+          matched_placement_ids: utils.match_placements('purchase'),
           matched_country_ids: registerData.matched_country_ids || utils.matchedCountries,
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
@@ -1928,15 +1895,6 @@
 
         var event = utils.extractOriginData(registerData, 'event');
 
-        var matchedPlacementIds = utils.match_placements(event.event_category);
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-post-event';
-
-        options.iframe =
-          Object.keys(options.iframe).length === 0
-            ? utils.defaultIframeOptions(containerName)
-            : options.iframe;
-
         utils.merge_custom_properties(custom_properties);
 
         var origin_params = utils.withoutProperties(
@@ -1952,7 +1910,7 @@
           currency: registerData.currency || customerData.currency,
           language: registerData.language || customerData.language,
           integration_platform: config.integration_platform,
-          matched_placement_ids: matchedPlacementIds,
+          matched_placement_ids: utils.match_placements(event.event_category),
           ts: talkablePlacementsConfig.timestamp,
           ii: talkablePlacementsConfig.integration_id,
           vi: verify_integration,
@@ -1965,22 +1923,12 @@
       show_email_capture_offer: function (data) {
         utils.ensureInitialized();
 
-        var registerData = utils.clone(data || {});
-
-        var matchedPlacementIds =
-          registerData.matched_placement_ids ||
-          utils.match_placements(
-            'email_capture_popup',
-            talkablePlacementsConfig.conversion_placements
-          );
-
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-email-capture-offer';
-
         var options = {
-          iframe: utils.defaultIframeOptions(containerName),
+          iframe: utils.defaultIframeOptions('talkable-email-capture-offer'),
           trigger_widget: {},
         };
+
+        var registerData = utils.clone(data || {});
 
         utils.merge_custom_properties(registerData.custom_properties);
 
@@ -1992,11 +1940,17 @@
         }
 
         delete customerData.accepted_cookies;
+        var matched_placement_ids =
+          registerData.matched_placement_ids ||
+          utils.match_placements(
+            'email_capture_popup',
+            talkablePlacementsConfig.conversion_placements
+          );
 
         var parameters = {
           traffic_source: registerData.traffic_source,
           campaign_tags: registerData.campaign_tags,
-          matched_placement_ids: matchedPlacementIds,
+          matched_placement_ids: matched_placement_ids,
           accepted_cookies: accepted_cookies,
         };
 
@@ -2004,7 +1958,7 @@
 
         setTimeout(function () {
           if (config.email_capture_show_offer) {
-            if (matchedPlacementIds !== EMPTY_PLACEMENTS) {
+            if (matched_placement_ids !== EMPTY_PLACEMENTS) {
               utils.formIframe(options, '/email_capture/offers/create', parameters);
             } else {
               utils.log('No campaign placements matched.');
@@ -2025,11 +1979,8 @@
           return;
         }
 
-        var containerName =
-          utils.matchContainerName(matchData.matchedPlacementIds) || 'talkable-loyalty';
-
         var options = {
-          iframe: utils.defaultIframeOptions(containerName),
+          iframe: utils.defaultIframeOptions('talkable-loyalty'),
           trigger_widget: {},
         };
 
@@ -2139,20 +2090,18 @@
         utils.ensureInitialized();
         var registerData = utils.clone(data || {});
 
-        var matchedPlacementIds =
-          registerData.matched_placement_ids ||
-          utils.match_placements('claim_by_name_popup');
-
-        var containerName =
-          utils.matchContainerName(matchedPlacementIds) || 'talkable-claim-by-name';
-
         var options = {
-          iframe: registerData.iframe || utils.defaultIframeOptions(containerName),
+          iframe:
+            registerData.iframe || utils.defaultIframeOptions('talkable-claim-by-name'),
           widget_enabled: registerData.widget_enabled || {},
           trigger_widget: registerData.trigger_widget || {},
         };
 
         utils.merge_custom_properties(registerData.custom_properties);
+
+        var matchedPlacementIds =
+          registerData.matched_placement_ids ||
+          utils.match_placements('claim_by_name_popup');
 
         var urlParameters = {
           campaign_id:
@@ -2265,15 +2214,15 @@
 
   // %OVERRIDES%
   _TALKABLE_PER_CLIENT_CONFIG = {
-            server: "https://www.void.talkable.com",
-            site_slug: "testmax-22nov2024"
-        },
-        window._talkableq = window._talkableq || [],
-        _talkableq.unshift(["init", {
-            site_id: _TALKABLE_PER_CLIENT_CONFIG.site_slug,
-            server: _TALKABLE_PER_CLIENT_CONFIG.server,
-            integration_platform: ""
-        }]),
+          server: "https://www.void.talkable.com",
+          site_slug: "testmax-22nov2024"
+      },
+      window._talkableq = window._talkableq || [],
+      _talkableq.unshift(["init", {
+          site_id: _TALKABLE_PER_CLIENT_CONFIG.site_slug,
+          server: _TALKABLE_PER_CLIENT_CONFIG.server,
+          integration_platform: ""
+      }]),
 
   talkable.run();
 })(window, document, JSON, Object);
