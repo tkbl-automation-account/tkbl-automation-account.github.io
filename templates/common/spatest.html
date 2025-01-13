@@ -64,6 +64,19 @@
         });
     </script>
 
+    <br/>
+    <button id="exclusion-button">Exclusion button</button>
+    <br/>
+
+    <!-- Add a script to handle button click -->
+    <script>
+        document.querySelector('#exclusion-button').addEventListener('click', function() {
+            const url = new URL(location);
+            url.searchParams.set("exclude", "true");
+            history.pushState({}, "", url);
+        });
+    </script>
+
     <div id="talkable-offer"></div>
 
 </div>
