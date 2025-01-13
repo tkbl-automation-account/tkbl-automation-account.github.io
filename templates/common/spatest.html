@@ -59,7 +59,7 @@
     <script>
         document.querySelector('#second-button').addEventListener('click', function() {
             const url = new URL(location);
-            url.searchParams.set("foo", "bar");
+            url.searchParams.set("exclusion", "false");
             history.pushState({}, "", url);
         });
     </script>
@@ -72,7 +72,7 @@
     <script>
         document.querySelector('#exclusion-button').addEventListener('click', function() {
             const url = new URL(location);
-            url.searchParams.set("exclude", "true");
+            url.searchParams.set("exclusion", "true");
             history.pushState({}, "", url);
         });
     </script>
