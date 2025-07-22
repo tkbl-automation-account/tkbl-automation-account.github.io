@@ -1,6 +1,6 @@
 //https://talkable.atlassian.net/browse/PR-22533
 //https://github.com/talkable/talkable-integration/pull/784/files
-//updated on 17 Jul 2025, 09:33
+//updated on 22 Jul 2025, 16:06
 /**
  * @prettier
  */
@@ -635,52 +635,6 @@
           }
 
           return matched;
-        }
-
-        if (talkablePlacementsConfig.default_country_id) {
-          var defaultCountryId = talkablePlacementsConfig.default_country_id;
-
-          for (var p = 0; p < placements.length; p++) {
-            var defaultPlacement = placements[p];
-
-            if (!defaultPlacement.has_live_campaigns) {
-              continue;
-            }
-
-            if (
-              defaultPlacement.event_category &&
-              defaultPlacement.event_category !== event_category
-            ) {
-              continue;
-            }
-
-            var defaultMatchers = defaultPlacement.inclusion_matchers || [
-              defaultPlacement.inclusion_matcher,
-            ];
-
-            for (var q = 0; q < defaultMatchers.length; q++) {
-              if (
-                defaultMatchers[q] &&
-                defaultMatchers[q].site_country_id &&
-                defaultMatchers[q].site_country_id === defaultCountryId
-              ) {
-                matched.push(defaultPlacement.id);
-                utils.placements.push(defaultPlacement.id);
-                utils.matchedCountries.push(defaultCountryId);
-                break;
-              }
-            }
-          }
-
-          if (matched.length) {
-            for (var r = 0; r < matched.length; r++) {
-              var matchKey = matched[r] + ':' + event_category;
-
-              utils.integratedCampaignsPlacementIds.add(matchKey);
-            }
-
-            return matched;
-          }
         }
 
         for (var n = 0; n < placements.length; n++) {
@@ -1846,6 +1800,7 @@
         if (
           parameters.affiliate_campaign_id ||
           parameters.campaign_tags ||
+          parameters.matched_country_ids ||
           parameters.tkbl_expand
         ) {
           utils.formIframe(options, '/affiliate_members/create', parameters);
