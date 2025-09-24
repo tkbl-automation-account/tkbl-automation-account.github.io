@@ -867,7 +867,7 @@
         options.frameBorder = '0';
         options.allowTransparency = true;
         options.src = url;
-        options.allow = 'camera *;microphone *;web-share';
+        options.allow = 'camera *;microphone *;web-share *';
         options.permissionsPolicy = 'camera=(self); microphone=(self); web-share=(self)';
         var container = options.container || utils.generateRandomIframeName();
 
