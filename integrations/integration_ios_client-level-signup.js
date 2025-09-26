@@ -1074,7 +1074,7 @@
         });
 
         utils.subscribe('apple_signin_perform', iframe.name, function (data) {
-          if (appleID) {
+          if (AppleID) {
             AppleID.auth.init(data);
             AppleID.auth.signIn().catch(function () {
               utils.postmessage.send(
