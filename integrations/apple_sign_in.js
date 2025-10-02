@@ -1,5 +1,5 @@
 //https://github.com/talkable/talkable-integration/pull/790/files#diff-9c36ce7c5f2cea181956ea92562fc188b93061e732df9ab3fbabfa6c21924f06
-//updated on 30 sept 2025, 17:22
+//updated on 2 oct 2025, 11:55
 /**
  * @prettier
  */
@@ -1061,7 +1061,7 @@
         });
 
         utils.subscribe('apple_sdk_required', iframe.name, function () {
-          if (!AppleID) {
+          if (typeof AppleID === 'undefined') {
             var script = document.createElement('script');
 
             script.src =
