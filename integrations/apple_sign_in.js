@@ -1,5 +1,7 @@
 //https://github.com/talkable/talkable-integration/pull/790/files#diff-9c36ce7c5f2cea181956ea92562fc188b93061e732df9ab3fbabfa6c21924f06
-//updated on 2 oct 2025, 11:55
+//updated on 10 oct 2025, 16:34
+
+
 /**
  * @prettier
  */
@@ -1071,8 +1073,15 @@
         });
 
         utils.subscribe('apple_signin_perform', iframe.name, function (data) {
+          const appleData = {
+            clientId: data.clientId,
+            redirectURI: window.location.origin + data.redirect_uri_path,
+            scope: data.scope,
+            usePopup: data.usePopup,
+          };
+
           if (AppleID) {
-            AppleID.auth.init(data);
+            AppleID.auth.init(appleData);
             AppleID.auth.signIn().catch(function () {
               utils.postmessage.send(
                 { type: 'apple_login_failed' },
@@ -1091,7 +1100,7 @@
 
         document.addEventListener('AppleIDSignInOnSuccess', function (event) {
           utils.postmessage.send(
-            { type: 'apple_login_success', data: event },
+            { type: 'apple_login_success', data: event.detail },
             '*',
             iframe.contentWindow
           );
